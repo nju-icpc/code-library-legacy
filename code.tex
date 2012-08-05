@@ -1,0 +1,154 @@
+\section{比赛配置}
+\subsection{代码库校验和}
+\createlinenumber{1}{01b4}
+\createlinenumber{2}{44f9}
+\createlinenumber{3}{4de6}
+\createlinenumber{4}{c502}
+\createlinenumber{5}{427e}
+\createlinenumber{6}{b41f}
+\createlinenumber{7}{d74e}
+\createlinenumber{8}{427e}
+\createlinenumber{9}{f7db}
+\createlinenumber{10}{f335}
+\begin{lstlisting}[language=Python]
+# 代码库校验用于检查代码库录入是否正确，忽略每行的空白字符和注释(//)
+# 使用方法: python checksum.py < 1001.cpp
+# 输出: 每一行代码及其校验和(md5)
+import re, sys, hashlib
+
+def digest_line(s):
+	return hashlib.md5(re.sub(r'\s|//.*', '', s)).hexdigest()[-4:]
+
+for line in sys.stdin.read().strip().split("\n"):
+	print digest_line(line), line
+\end{lstlisting}
+\subsection{vim配置文件}
+\createlinenumber{11}{44ed}
+\createlinenumber{12}{914c}
+\createlinenumber{13}{7db5}
+\createlinenumber{14}{57b2}
+\createlinenumber{15}{9832}
+\createlinenumber{16}{e416}
+\createlinenumber{17}{7232}
+\createlinenumber{18}{740c}
+\createlinenumber{19}{5913}
+\begin{lstlisting}[language={}]
+# vimrc 配置文件
+set nocompatible
+set number
+set ruler
+set showcmd
+set autoindent
+set cindent
+set smartindent
+set shiftwidth=4
+\end{lstlisting}
+
+\section{其他}
+\subsection{校赛Meeting标程}
+\createlinenumber{20}{1915}
+\createlinenumber{21}{1fa4}
+\createlinenumber{22}{427e}
+\createlinenumber{23}{842a}
+\createlinenumber{24}{8f9d}
+\createlinenumber{25}{427e}
+\createlinenumber{26}{4d45}
+\createlinenumber{27}{4506}
+\createlinenumber{28}{ec32}
+\createlinenumber{29}{e2fe}
+\createlinenumber{30}{3df7}
+\createlinenumber{31}{b00a}
+\createlinenumber{32}{05ee}
+\createlinenumber{33}{4506}
+\createlinenumber{34}{5c82}
+\createlinenumber{35}{c0ce}
+\createlinenumber{36}{583c}
+\createlinenumber{37}{95cf}
+\createlinenumber{38}{547e}
+\createlinenumber{39}{95cf}
+\createlinenumber{40}{427e}
+\createlinenumber{41}{afdd}
+\createlinenumber{42}{4506}
+\createlinenumber{43}{918b}
+\createlinenumber{44}{b4a4}
+\createlinenumber{45}{4506}
+\createlinenumber{46}{3dd0}
+\createlinenumber{47}{8a02}
+\createlinenumber{48}{40c0}
+\createlinenumber{49}{95cf}
+\createlinenumber{50}{39f8}
+\createlinenumber{51}{95cf}
+\createlinenumber{52}{427e}
+\createlinenumber{53}{299c}
+\createlinenumber{54}{4506}
+\createlinenumber{55}{9523}
+\createlinenumber{56}{918b}
+\createlinenumber{57}{427e}
+\createlinenumber{58}{ba03}
+\createlinenumber{59}{4506}
+\createlinenumber{60}{e322}
+\createlinenumber{61}{6f5e}
+\createlinenumber{62}{4506}
+\createlinenumber{63}{3dd0}
+\createlinenumber{64}{8a02}
+\createlinenumber{65}{7091}
+\createlinenumber{66}{95cf}
+\createlinenumber{67}{a0d8}
+\createlinenumber{68}{95cf}
+\createlinenumber{69}{427e}
+\createlinenumber{70}{7021}
+\createlinenumber{71}{95cf}
+\begin{lstlisting}[language=C++]
+#include <stdio.h>
+#include <math.h>
+
+int u1, v1, u2, v2, u3, v3;
+double x, y, d;
+
+double f(double u, double v)
+{
+   double r=0;
+   r+=sqrt((u-u1)*(u-u1)+(v-v1)*(v-v1));
+   r+=sqrt((u-u2)*(u-u2)+(v-v2)*(v-v2));
+   r+=sqrt((u-u3)*(u-u3)+(v-v3)*(v-v3));
+   if(r<d)
+   {
+      d=r;
+      x=u;
+      y=v;
+   }
+   return r;
+}
+
+double f(double u)
+{
+   double L, R, M1, M2;
+   for(L=-1001, R=1001; R-L>1e-6; )
+   {
+      M1=(L*2+R)/3;
+      M2=(L+R*2)/3;
+      f(u, M1)<f(u, M2)?(R=M2):(L=M1);
+   }
+   return f(u, (L+R)/2);
+}
+
+int main()
+{
+   int T;
+   double L, R, M1, M2;
+   
+   for(scanf("%d", &T); T--; )
+   {
+      scanf("%d %d %d %d %d %d", &u1, &v1, &u2, &v2, &u3, &v3);
+      for(d=1e100, L=-1001, R=1001; R-L>1e-6; )
+      {
+         M1=(L*2+R)/3;
+         M2=(L+R*2)/3;
+         f(M1)<f(M2)?(R=M2):(L=M1);
+      }
+      printf("(%.3lf,%.3lf)\n", x, y);
+   }
+   
+   return 0;
+}
+\end{lstlisting}

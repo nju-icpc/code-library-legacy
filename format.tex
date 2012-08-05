@@ -1,0 +1,73 @@
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{fontspec,xunicode,xltxtra}
+\usepackage{titlesec}
+\usepackage{indentfirst}
+\usepackage[BoldFont,SlantFont]{xeCJK}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{printlen}
+\usepackage{ifthen}
+\usepackage[savepos]{zref}
+\usepackage{multicol}
+% \XeTeXinputencoding "cp936"
+
+\setCJKfamilyfont{kai}{KaiTi_GB2312}
+\setCJKfamilyfont{hei}{STXihei}
+\setCJKmainfont{SimSun}
+
+\pagestyle{fancy}
+\rhead{{\sf\thepage}}
+\lhead{\kai ACM/ICPC Code Library}
+
+\fancyhead[L]{\sf\kai \leftmark} 
+\fancyhead[R]{\sf\kai \rightmark}
+
+
+
+\newcommand{\kai}{\CJKfamily{kai}}
+\newcommand{\hei}{\CJKfamily{hei}}
+
+\setlength{\parindent}{2.2em}
+
+\renewcommand{\contentsname}{\hei 目录}
+
+
+% settings for listings
+\lstset {
+  basicstyle = \small\monotype,
+  language = C++,
+  tabsize = 2,
+  breaklines = true,
+  breakindent = 1.1em,
+  numbers=right,
+  stringstyle=\monotype,
+  numberstyle=\footnotesize\ttfamily,
+  firstnumber=last,
+  basewidth={0.55em, 0.5em}
+}
+
+% font of section header
+\usepackage{sectsty}
+\allsectionsfont{\hei}
+
+% main font of code, Liberation Mono looks pretty good
+\newfontfamily{\monotype}{Liberation Mono}
+
+% an amazing script
+% converts an line-number to arbitrary string
+\let\othelstnumber=\thelstnumber
+\def\createlinenumber#1#2{
+    \edef\thelstnumber{%
+        \unexpanded{%
+            \ifnum#1=\value{lstnumber}\relax
+             \tt #2%
+            \else}%
+        \expandafter\unexpanded\expandafter{\thelstnumber\othelstnumber\fi}%
+    }
+    \ifx\othelstnumber=\relax\else
+      \let\othelstnumber\relax
+    \fi
+}
+
