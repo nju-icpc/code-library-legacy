@@ -10,10 +10,8 @@ void *STK_BAK;
 	#define SP "%%rsp"
 #endif
 
-int main() {
-	asm volatile("mov " SP ", %0; mov %1," SP
-		: "=g"(STK_BAK) : "g"(STK + sizeof(STK)) : );
-	// 这里是任意的代码
-	asm volatile("mov %0, " SP : : "g"(STK_BAK));
-	return 0;
-}
+// 使用
+asm volatile("mov " SP ",%0; mov %1," SP: "=g"(STK_BAK):"g"(STK+sizeof(STK)):);
+// 这里是任意的代码
+asm volatile("mov %0," SP::"g"(STK_BAK));
+
