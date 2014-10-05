@@ -11,11 +11,13 @@
 \usepackage{ifthen}
 \usepackage[savepos]{zref}
 \usepackage{multicol}
+\usepackage{sectsty}
 % \XeTeXinputencoding "cp936"
 
-\setCJKfamilyfont{kai}{KaiTi_GB2312}
-\setCJKfamilyfont{hei}{STXihei}
+\setCJKfamilyfont{kai}{SimSun} % {KaiTi_GB2312}
+\setCJKfamilyfont{hei}{SimSun} % {STXihei}
 \setCJKmainfont{SimSun}
+\newfontfamily{\monotype}{Courier New}
 
 \pagestyle{fancy}
 \rhead{{\sf\thepage}}
@@ -49,11 +51,7 @@
 }
 
 % font of section header
-\usepackage{sectsty}
 \allsectionsfont{\hei}
-
-% main font of code, Liberation Mono looks pretty good
-\newfontfamily{\monotype}{Liberation Mono}
 
 % an amazing script
 % converts an line-number to arbitrary string

@@ -1,4 +1,4 @@
-all: check
+all:
 	./gentex.py > code.tex
 	xelatex main.tex
 	xelatex main.tex
