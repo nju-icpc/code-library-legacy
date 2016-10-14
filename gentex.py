@@ -25,8 +25,9 @@ def gen_section(sect_yaml):
 
     subsects = []
     for (idx, f) in enumerate(files):
-        title = f['desc']
+        title = f['title']
         fname = f['fname']
+        desc = f.get('desc', None)
 
         with open("src/%s/%s" % (dirname, fname), "r") as fp:
             code = fp.read()
@@ -41,6 +42,11 @@ def gen_section(sect_yaml):
         for line in code.split("\n"):
             sect.append("\\createlinenumber{%d}{%s}" % (line_count, digest_line(line)))
             line_count += 1
+
+        if desc:
+            sect.append('\\begin{shaded}')
+            sect.append(desc)
+            sect.append('\\end{shaded}')
 
         sect.append("\\begin{lstlisting}[language=%s]" % lang(extension))
         sect.append(code.decode('utf-8'))

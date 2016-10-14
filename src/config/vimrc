@@ -1,4 +1,3 @@
-# vimrc 配置文件
 set nocompatible
 set number
 set ruler

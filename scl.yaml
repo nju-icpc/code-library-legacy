@@ -1,47 +1,57 @@
 - name: 比赛配置
   dir: config/
   files:
-    - desc: 代码库校验和
+    - title: 代码库校验和
       fname: checksum.py
-    - desc: Vim配置文件
+      desc: |
+        检查代码库录入是否正确。
+
+        计算每一行忽略空白字符和//注释后内容的MD5 Hash。
+    - title: Vim配置文件
       fname: vimrc
-    - desc:  堆栈外挂
+    - title: 堆栈外挂
       fname: stack.cpp
-    - desc: I/O外挂
+      desc: |
+        将堆栈指针指向用户空间的缓存中从而获得无限大的堆栈。注意在返回前将堆栈指针恢复，否则将出现Segmentation Fault。
+    - title: I/O外挂
       fname: io.cpp
-    - desc: 编译优化外挂
+      desc: |
+        快速整数输入输出，只支持非负整数。
+    - title: 编译优化外挂
       fname: pragma.cpp
+      desc: |
+        强行开启O2选项。
 - name: 组合优化
   dir: opt/
   files:
-    - desc: 上下界最小费用可行流
+    - title: 上下界最小费用可行流
       fname: costflow.cpp
-    - desc: 线性规划(单纯形)
+    - title: 线性规划(单纯形)
       fname: lp.cpp
 - name: Watashi代码库(备用)
   dir: watashi/
   files:
-    - desc: RMQ
+    - title: $O(n\log n)-O(1)$ RMQ
       fname: rmq.cpp
-    - desc: LCA
+    - title: $O(n\log n)-O(\log n)$ LCA
       fname: lca.cpp
-    - desc: 树状数组
+    - title: 树状数组
       fname: bit.cpp
-    - desc: 并查集
+    - title: 并查集
       fname: union-find.cpp
-    - desc: 轻重权树剖分
+    - title: 轻重权树剖分
       fname: chain-decomp.cpp
-    - desc: 强连通分量
+    - title: 强连通分量
       fname: scc.cpp
-    - desc: 双连通分量
+    - title: 双连通分量
       fname: bcc.cpp
-    - desc: 二分图匹配
+    - title: 二分图匹配
       fname: bimatch.cpp
-    - desc: 最小费用最大流
+    - title: 最小费用最大流
       fname: flow.cpp
-    - desc: AhoCorasick自动机
+    - title: AhoCorasick自动机
       fname: ac-automata.cpp
-    - desc: 后缀数组
+    - title: 后缀数组
       fname: sa.cpp
-    - desc: LU分解
+    - title: LU分解
       fname: lu.cpp

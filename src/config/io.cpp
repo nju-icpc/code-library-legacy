@@ -1,4 +1,3 @@
-// IO 外挂
 #define BUFSIZE 20000000
 char buf[BUFSIZE], *pt = buf;
 #define scan(t) do { \
