@@ -1,58 +1,52 @@
 #!/usr/bin/env python2
-import re, os, hashlib
-
+import re, os, hashlib, yaml
 
 line_count = 1
 
-def digest_line(s):
-    return hashlib.md5(re.sub(r'\s|//.*', '', s)).hexdigest()[-4:]
+scl = yaml.load(open("scl.yaml").read())
 
-langs = {"c": "C", "cpp": "C++", "py": "Python", "pl": "Perl",
+LANGS = {"c": "C", "cpp": "C++", "py": "Python", "pl": "Perl",
          "sh": "sh", "java": "Java"}
 
 def lang(ext):
     if not ext: return "{}"
     ext = ext.lower()
-    return langs[ext] if ext in langs else "{}"
+    return LANGS[ext] if ext in LANGS else "{}"
 
-def gen_section(name, dirname):
+def gen_section(sect_yaml):
     global line_count
+
+    name = sect_yaml['name']
+    dirname = sect_yaml['dir']
+    files = sect_yaml['files']
+
     sect = []
     sect.append("\\section{%s}" % name)
 
-    files = []
-    for src in os.listdir("./%s/" % dirname):
-        if src.startswith('.'): continue
-        fp = open("./%s/%s" % (dirname, src), "r") # read the file
-        code = fp.read().strip()
-        fp.close()
+    subsects = []
+    for (idx, f) in enumerate(files):
+        title = f['desc']
+        fname = f['fname']
 
-        match = re.search(r'^((\d+) )?(.*?)(\.([^.]*))?$', src)
-        index = int(match.group(2)) if match.group(1) else 99999
-        title = match.group(3)
-        extension = match.group(5)
+        with open("src/%s/%s" % (dirname, fname), "r") as fp:
+            code = fp.read()
 
-        files.append( (index, title, extension, code) )
-        
-    for (index, title, extension, code) in sorted(files):
+        extension = fname.split('.')[-1]
+
         sect.append("\\subsection{%s}" % title)
+
+        def digest_line(s):
+            return hashlib.md5(re.sub(r'\s|//.*', '', s)).hexdigest()[-4:]
 
         for line in code.split("\n"):
             sect.append("\\createlinenumber{%d}{%s}" % (line_count, digest_line(line)))
             line_count += 1
 
         sect.append("\\begin{lstlisting}[language=%s]" % lang(extension))
-        sect.append(code)
+        sect.append(code.decode('utf-8'))
         sect.append("\\end{lstlisting}")
-    
-    return "\n".join(sect)
 
-doc = []
-os.chdir("./src/")
-for section in os.listdir("."):
-    match = re.search(r'^(\d+) (.*)$', section)
-    if match is not None:
-        (index, name) = (int(match.group(1)), match.group(2)) if match else (99999, section)
-        doc.append((index, name, section))
+    return "\n".join(sect).encode('utf-8')
 
-print "\n\n".join([gen_section(item[1], item[2]) for item in sorted(doc)])
+for section in scl:
+    print gen_section(section)

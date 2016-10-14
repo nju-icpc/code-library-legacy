@@ -1,0 +1,47 @@
+- name: 比赛配置
+  dir: config/
+  files:
+    - desc: 代码库校验和
+      fname: checksum.py
+    - desc: Vim配置文件
+      fname: vimrc
+    - desc:  堆栈外挂
+      fname: stack.cpp
+    - desc: I/O外挂
+      fname: io.cpp
+    - desc: 编译优化外挂
+      fname: pragma.cpp
+- name: 组合优化
+  dir: opt/
+  files:
+    - desc: 上下界最小费用可行流
+      fname: costflow.cpp
+    - desc: 线性规划(单纯形)
+      fname: lp.cpp
+- name: Watashi代码库(备用)
+  dir: watashi/
+  files:
+    - desc: RMQ
+      fname: rmq.cpp
+    - desc: LCA
+      fname: lca.cpp
+    - desc: 树状数组
+      fname: bit.cpp
+    - desc: 并查集
+      fname: union-find.cpp
+    - desc: 轻重权树剖分
+      fname: chain-decomp.cpp
+    - desc: 强连通分量
+      fname: scc.cpp
+    - desc: 双连通分量
+      fname: bcc.cpp
+    - desc: 二分图匹配
+      fname: bimatch.cpp
+    - desc: 最小费用最大流
+      fname: flow.cpp
+    - desc: AhoCorasick自动机
+      fname: ac-automata.cpp
+    - desc: 后缀数组
+      fname: sa.cpp
+    - desc: LU分解
+      fname: lu.cpp
