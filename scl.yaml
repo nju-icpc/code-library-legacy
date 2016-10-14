@@ -4,9 +4,8 @@
     - title: 代码库校验和
       fname: checksum.py
       desc: |
-        检查代码库录入是否正确。
-
-        计算每一行忽略空白字符和//注释后内容的MD5 Hash。
+        计算每一行忽略空白字符和\texttt{//}注释后内容的MD5 Hash。
+        使用\texttt{python checksum.py < code.cpp}打印校验和,并与代码库侧面的数值比对。
     - title: Vim配置文件
       fname: vimrc
     - title: 堆栈外挂

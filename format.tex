@@ -3,7 +3,7 @@
 \usepackage{fontspec,xunicode,xltxtra}
 \usepackage{titlesec}
 \usepackage{indentfirst}
-\usepackage[BoldFont,SlantFont]{xeCJK}
+\usepackage{xeCJK}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{listings}
@@ -13,27 +13,27 @@
 \usepackage{multicol}
 \usepackage{sectsty}
 \usepackage{xcolor}
-\usepackage{framed}
-\definecolor{shadecolor}{gray}{0.90}
+\usepackage[framemethod=tikz]{mdframed}
 
-\setCJKfamilyfont{kai}{SimSun} % {KaiTi_GB2312}
-\setCJKfamilyfont{hei}{SimSun} % {STXihei}
-\setCJKmainfont{SimSun}
+\usepackage[paper=a4paper]{geometry}
+\geometry{headheight=2.6cm,headsep=3mm,footskip=13mm}
+\geometry{top=2cm,bottom=2cm,left=2cm,right=2cm}
+
+
+\setCJKmainfont[BoldFont={SimHei}]{SimSun}
 \newfontfamily{\monotype}{Courier New}
+%\newcommand{\monotype}{\tt}
 
 \pagestyle{fancy}
 \rhead{{\sf\thepage}}
-\lhead{\kai ACM/ICPC Code Library}
+\lhead{ACM/ICPC Code Library}
 
-\fancyhead[L]{\sf\kai \leftmark} 
-\fancyhead[R]{\sf\kai \rightmark}
-
-\newcommand{\kai}{\CJKfamily{kai}}
-\newcommand{\hei}{\CJKfamily{hei}}
+\fancyhead[L]{\sf\leftmark} 
+\fancyhead[R]{\sf\rightmark}
 
 \setlength{\parindent}{0em}
 
-\renewcommand{\contentsname}{\hei 目录}
+\renewcommand{\contentsname}{目录}
 
 
 % settings for listings
@@ -47,11 +47,8 @@
   stringstyle=\monotype,
   numberstyle=\footnotesize\ttfamily,
   firstnumber=last,
-  basewidth={0.55em, 0.5em}
+  basewidth={0.5em, 0.4em},
 }
-
-% font of section header
-\allsectionsfont{\hei}
 
 % an amazing script
 % converts an line-number to arbitrary string

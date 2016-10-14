@@ -65,4 +65,4 @@
 * 编译环境: Linux/Mac OS X, texlive xelatex (Windows未测试)
 * 编译方法: 使用make工具编译。由于每一行代码的fingerprint使用了label，在添加新的代码后需要编译两次(Makefile中默认编译两次)
 * 编译环境: xelatex & xecjk
-* 编译需要以下字体：宋体(SimSun)和Courier New。这些都是非常容易获得的标准字体。
+* 编译需要以下字体：宋体(SimSun)、黑体(SimHei)和Courier New。如果系统中不包含此字体，可以在`format.tex`中修改。

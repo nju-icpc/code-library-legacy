@@ -3,5 +3,6 @@
 *.aux
 *.log
 *.toc
-code.tex
+/code.tex
 *.pdf
+*.out
