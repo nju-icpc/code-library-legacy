@@ -19,7 +19,7 @@
     - title: 编译优化外挂
       fname: pragma.cpp
       desc: |
-        强行开启O2选项。
+        开启GCC的O2编译优化。
 - name: 组合优化
   dir: opt/
   files:

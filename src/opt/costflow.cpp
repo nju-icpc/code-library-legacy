@@ -1,4 +1,4 @@
-/* 支持上下界的最小费用 S-T 可行流
+/* 支持上下界的最小费用S-T可行流
  * 可兼作高效最小费用最大流实现
  * template
  *   <class W>     - the weight type
