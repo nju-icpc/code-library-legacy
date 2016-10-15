@@ -8,4 +8,4 @@ check:
 	true # code valid check
 
 clean:
-	rm -f main.pdf main.aux main.log
+	rm -f main.pdf *.aux *.log *.toc

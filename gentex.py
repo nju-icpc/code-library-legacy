@@ -44,7 +44,7 @@ def gen_section(sect_yaml):
             line_count += 1
 
         if desc:
-            sect.append('\\begin{mdframed}[hidealllines=true,backgroundcolor=blue!10]')
+            sect.append('\\begin{mdframed}[hidealllines=true,backgroundcolor=blue!5]')
             sect.append(desc.strip())
             sect.append('\\end{mdframed}\\vspace{-10pt}')
         sect.append("\\begin{lstlisting}[language=%s]" % lang(extension))

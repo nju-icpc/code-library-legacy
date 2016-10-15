@@ -1,13 +1,20 @@
-\documentclass[9pt]{article}
+\documentclass[9pt,landscape]{article}
 
 \input{format.tex} % formatting template
 
 \begin{document}
 
-\title{\bf 代码模版库}
-\date{}
+\thispagestyle{empty}
+\null\vfill
+\begin{center}
+\Huge \textbf{代码模版库}
 
-\maketitle
+\vspace{1.5cm}
+
+\includegraphics[height=3cm]{njulogo.pdf}
+\end{center}
+\vfill
+\clearpage
 
 \begin{multicols}{2}
 \tableofcontents
@@ -19,6 +26,6 @@
 
 \begin{multicols}{2}
 \input{code.tex}
-
 \end{multicols}
+
 \end{document}
