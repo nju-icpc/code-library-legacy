@@ -2,7 +2,7 @@
 
 欢迎大家与我们分享代码，或是从这个项目中提取代码。
 
-[最新的PDF版本](https://github.com/njuacmicpc/code_library/blob/master/releases/latest.pdf)。
+[最新的PDF版本的下载链接](https://github.com/njuacmicpc/code_library/raw/master/releases/latest.pdf)。
 
 ## 重要注意事项及已知的bug
 
