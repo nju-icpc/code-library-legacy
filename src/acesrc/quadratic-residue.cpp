@@ -1,3 +1,8 @@
+/*
+    Find the smallest x (0 <= x < m, such that x^2 = n (mod m)).
+    If not exists, return -1.
+    m is a prime
+*/
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
@@ -36,9 +41,6 @@ struct QuadraticResidue {
     }
 
     int GetRoot(int n, int m) {
-        // Find the smallest x (0 <= x < m, such that x^2 = n (mod m)).
-        // If not exists, return -1.
-        // m is a prime.
         n = (n % m + m) % m;
         if (n == 0) return 0;
         if (m == 2) return 1;
