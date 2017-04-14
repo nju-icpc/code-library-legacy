@@ -27,6 +27,13 @@
       fname: costflow.cpp
     - title: 线性规划(单纯形)
       fname: lp.cpp
+- name: 数论
+  dir: numtheory/
+  files:
+    - title: 二次剩余
+      fname: quadratic-residue.cpp
+      desc: |
+        求最小的$0\le x < p$满足$x^2=n\ (\mathrm{mod}\ p)$ ($p$是素数)。不存在时返回$-1$。
 - name: Watashi代码库(备用)
   dir: watashi/
   files:

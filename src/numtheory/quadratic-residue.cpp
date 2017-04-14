@@ -1,8 +1,3 @@
-/*
-  Find the smallest x (0 <= x < m, such that x^2 = n (mod m)).
-  If not exists, return -1.
-  m is a prime
-*/
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
