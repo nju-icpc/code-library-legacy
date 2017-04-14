@@ -1,25 +1,3 @@
-/* 支持上下界的最小费用S-T可行流
- * 可兼作高效最小费用最大流实现
- * template
- *   <class W>     - the weight type
- * struct MinCostFlow
- *
- * G.init(         - init graph
- *    source node id, 
- *    sink node id, 
- *    node count,  - number of nodes, 0-based
- *    epsilon,     - 0 for integer, 1e-6 for floats
- *    inf,         - the weight upper bound
- * )
- * G.insert(       - insert an edge
- *    u,           - first vertex
- *    v,           - second vertex
- *    lb,          - flow lower bound
- *    ub,          - flow upper bound
- *    cost         - unit edge cost (type is W)
- * )
- * G.work() returns the minimum cost.
- */
 #include<iostream>
 #include<cstdio>
 #include<algorithm>

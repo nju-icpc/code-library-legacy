@@ -1,7 +1,6 @@
-SRCS=$(shell find src/)
+SRCS=$(shell find src/) $(shell find tex/)
 
-build/main.pdf: $(SRCS) Makefile scl.yaml tex/*
-	rm -rf build/
+build/main.pdf: $(SRCS) Makefile scl.yaml
 	mkdir -p build/
 	python gen.py > build/code.tex
 	cp tex/* build/

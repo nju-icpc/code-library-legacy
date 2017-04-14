@@ -25,6 +25,10 @@
   files:
     - title: 上下界最小费用可行流
       fname: costflow.cpp
+      desc: |
+        支持上下界的最小费用S-T可行流，可兼作高效最小费用最大流实现。
+        
+        class W: 权值的类型; G.init(源点编号, 汇点编号, 结点数量(0-based), 最小值(整数为0，浮点数为1e-6, 无穷大值); G.insert(u, v, 下界, 上界, 费用); G.work()返回最小代价可行流。
     - title: 线性规划(单纯形)
       fname: lp.cpp
 - name: 数论
