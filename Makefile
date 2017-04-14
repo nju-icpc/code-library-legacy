@@ -1,13 +1,16 @@
 SRCS=$(shell find src/)
 
-main.pdf: $(SRCS) scl.yaml main.tex format.tex
-	./gentex.py > code.tex
-	xelatex main.tex
-	xelatex main.tex
+build/main.pdf: $(SRCS) Makefile scl.yaml tex/*
+	rm -rf build/
+	mkdir -p build/
+	python gen.py > build/code.tex
+	cp tex/* build/
+	cd build && xelatex main.tex
+	cd build && xelatex main.tex
 
 .PHONY: clean check
 check:
 	true # code valid check
 
 clean:
-	rm -f main.pdf *.aux *.log *.toc
+	rm -rf build/

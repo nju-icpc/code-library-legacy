@@ -1,0 +1,2382 @@
+\section{比赛配置}
+\subsection{代码库校验和}
+\createlinenumber{1}{c502}
+\createlinenumber{2}{427e}
+\createlinenumber{3}{b41f}
+\createlinenumber{4}{d74e}
+\createlinenumber{5}{427e}
+\createlinenumber{6}{f7db}
+\createlinenumber{7}{f335}
+\createlinenumber{8}{427e}
+\begin{mdframed}[hidealllines=true,backgroundcolor=blue!5]
+计算每一行忽略空白字符和\texttt{//}注释后内容的MD5 Hash。
+使用\texttt{python checksum.py < code.cpp}打印校验和,并与代码库侧面的数值比对。
+\end{mdframed}\vspace{-10pt}
+\begin{lstlisting}[language=Python]
+import re, sys, hashlib
+
+def digest_line(s):
+    return hashlib.md5(re.sub(r'\s|//.*', '', s)).hexdigest()[-4:]
+
+for line in sys.stdin.read().strip().split("\n"):
+    print digest_line(line), line
+
+\end{lstlisting}
+\subsection{Vim配置文件}
+\createlinenumber{9}{914c}
+\createlinenumber{10}{7db5}
+\createlinenumber{11}{57b2}
+\createlinenumber{12}{9832}
+\createlinenumber{13}{e416}
+\createlinenumber{14}{7232}
+\createlinenumber{15}{740c}
+\createlinenumber{16}{5913}
+\createlinenumber{17}{427e}
+\begin{lstlisting}[language={}]
+set nocompatible
+set number
+set ruler
+set showcmd
+set autoindent
+set cindent
+set smartindent
+set shiftwidth=4
+
+\end{lstlisting}
+\subsection{堆栈外挂}
+\createlinenumber{18}{bebe}
+\createlinenumber{19}{effc}
+\createlinenumber{20}{4e99}
+\createlinenumber{21}{427e}
+\createlinenumber{22}{427e}
+\createlinenumber{23}{7bc9}
+\createlinenumber{24}{afcf}
+\createlinenumber{25}{ac7a}
+\createlinenumber{26}{a9ea}
+\createlinenumber{27}{1937}
+\createlinenumber{28}{427e}
+\createlinenumber{29}{3117}
+\createlinenumber{30}{427e}
+\createlinenumber{31}{3750}
+\createlinenumber{32}{427e}
+\createlinenumber{33}{427e}
+\createlinenumber{34}{6856}
+\createlinenumber{35}{7021}
+\createlinenumber{36}{95cf}
+\createlinenumber{37}{427e}
+\begin{mdframed}[hidealllines=true,backgroundcolor=blue!5]
+将堆栈指针指向用户空间的缓存中从而获得无限大的堆栈。注意在返回前将堆栈指针恢复，否则将出现Segmentation Fault。
+\end{mdframed}\vspace{-10pt}
+\begin{lstlisting}[language=C++]
+const int STK_SZ = 2000000; // 堆栈的格数
+char STK[STK_SZ * sizeof(void*)];     
+void *STK_BAK;
+
+// 32/64位自动检测
+#if defined(__i386__)
+  define SP "%%esp"
+#elif defined(__x86_64__)
+  #define SP "%%rsp"
+#endif
+
+int main() {
+  // 将堆栈指针移动到用户缓存
+  asm volatile("mov " SP ",%0; mov %1," SP: "=g"(STK_BAK):"g"(STK+sizeof(STK)):);
+  // 这时候就可以愉快地递归了！
+  // 将堆栈指针恢复
+  asm volatile("mov %0," SP::"g"(STK_BAK));
+  return 0;
+}
+
+\end{lstlisting}
+\subsection{I/O外挂}
+\createlinenumber{38}{6540}
+\createlinenumber{39}{eb51}
+\createlinenumber{40}{4e24}
+\createlinenumber{41}{d4df}
+\createlinenumber{42}{2760}
+\createlinenumber{43}{7181}
+\createlinenumber{44}{5bd0}
+\createlinenumber{45}{427e}
+\createlinenumber{46}{3117}
+\createlinenumber{47}{486b}
+\createlinenumber{48}{b496}
+\createlinenumber{49}{95cf}
+\createlinenumber{50}{427e}
+\createlinenumber{51}{427e}
+\begin{mdframed}[hidealllines=true,backgroundcolor=blue!5]
+快速整数输入输出，只支持非负整数。
+\end{mdframed}\vspace{-10pt}
+\begin{lstlisting}[language=C++]
+#define BUFSIZE 20000000
+char buf[BUFSIZE], *pt = buf;
+#define scan(t) do { \
+  int t = 0; \
+  while (!((*pt) >= '0' && (*pt) <= '9')) pt ++; \
+  while (((*pt) >= '0' && (*pt) <= '9')) t = t * 10 + (*(pt ++)) - '0'; \
+} while (0)
+ 
+int main() {
+	fread(buf, 1, BUFSIZE, stdin);
+	scan(N); scan(M); // ...
+}
+
+
+\end{lstlisting}
+\subsection{编译优化外挂}
+\createlinenumber{52}{de4b}
+\createlinenumber{53}{427e}
+\begin{mdframed}[hidealllines=true,backgroundcolor=blue!5]
+开启GCC的O2编译优化。
+\end{mdframed}\vspace{-10pt}
+\begin{lstlisting}[language=C++]
+#pragma GCC optimize("O2")
+
+\end{lstlisting}
+\section{组合优化}
+\subsection{上下界最小费用可行流}
+\createlinenumber{54}{193c}
+\createlinenumber{55}{89b6}
+\createlinenumber{56}{9cf5}
+\createlinenumber{57}{bff2}
+\createlinenumber{58}{5a99}
+\createlinenumber{59}{0cc6}
+\createlinenumber{60}{33d6}
+\createlinenumber{61}{f4d6}
+\createlinenumber{62}{815d}
+\createlinenumber{63}{5053}
+\createlinenumber{64}{4113}
+\createlinenumber{65}{fc78}
+\createlinenumber{66}{49d4}
+\createlinenumber{67}{0f35}
+\createlinenumber{68}{00e3}
+\createlinenumber{69}{915b}
+\createlinenumber{70}{e6b0}
+\createlinenumber{71}{7c4f}
+\createlinenumber{72}{b5bb}
+\createlinenumber{73}{49d4}
+\createlinenumber{74}{8e08}
+\createlinenumber{75}{f2b5}
+\createlinenumber{76}{e0a5}
+\createlinenumber{77}{59b9}
+\createlinenumber{78}{54ff}
+\createlinenumber{79}{09f7}
+\createlinenumber{80}{acb9}
+\createlinenumber{81}{b93d}
+\createlinenumber{82}{421c}
+\createlinenumber{83}{427e}
+\createlinenumber{84}{4aa1}
+\createlinenumber{85}{4e9f}
+\createlinenumber{86}{7d06}
+\createlinenumber{87}{5eea}
+\createlinenumber{88}{df79}
+\createlinenumber{89}{2a9c}
+\createlinenumber{90}{bdae}
+\createlinenumber{91}{a09f}
+\createlinenumber{92}{95cf}
+\createlinenumber{93}{329b}
+\createlinenumber{94}{427e}
+\createlinenumber{95}{bb73}
+\createlinenumber{96}{2bbc}
+\createlinenumber{97}{3049}
+\createlinenumber{98}{edec}
+\createlinenumber{99}{2824}
+\createlinenumber{100}{79c7}
+\createlinenumber{101}{427e}
+\createlinenumber{102}{d35b}
+\createlinenumber{103}{5985}
+\createlinenumber{104}{d804}
+\createlinenumber{105}{5d47}
+\createlinenumber{106}{3f3a}
+\createlinenumber{107}{0117}
+\createlinenumber{108}{cb76}
+\createlinenumber{109}{e965}
+\createlinenumber{110}{95cf}
+\createlinenumber{111}{427e}
+\createlinenumber{112}{1e3a}
+\createlinenumber{113}{99eb}
+\createlinenumber{114}{e949}
+\createlinenumber{115}{5a51}
+\createlinenumber{116}{95cf}
+\createlinenumber{117}{84ad}
+\createlinenumber{118}{21d4}
+\createlinenumber{119}{81fb}
+\createlinenumber{120}{5a4d}
+\createlinenumber{121}{5c56}
+\createlinenumber{122}{21fc}
+\createlinenumber{123}{3d4b}
+\createlinenumber{124}{0a05}
+\createlinenumber{125}{95cf}
+\createlinenumber{126}{95cf}
+\createlinenumber{127}{84fb}
+\createlinenumber{128}{95cf}
+\createlinenumber{129}{f8b9}
+\createlinenumber{130}{c62d}
+\createlinenumber{131}{a98a}
+\createlinenumber{132}{2e8b}
+\createlinenumber{133}{2591}
+\createlinenumber{134}{79a8}
+\createlinenumber{135}{f7cd}
+\createlinenumber{136}{6593}
+\createlinenumber{137}{a98a}
+\createlinenumber{138}{488b}
+\createlinenumber{139}{3361}
+\createlinenumber{140}{95cf}
+\createlinenumber{141}{e54d}
+\createlinenumber{142}{2d49}
+\createlinenumber{143}{a053}
+\createlinenumber{144}{6210}
+\createlinenumber{145}{3217}
+\createlinenumber{146}{2602}
+\createlinenumber{147}{87f6}
+\createlinenumber{148}{6953}
+\createlinenumber{149}{3c69}
+\createlinenumber{150}{4c72}
+\createlinenumber{151}{794c}
+\createlinenumber{152}{07ec}
+\createlinenumber{153}{c7e4}
+\createlinenumber{154}{52c5}
+\createlinenumber{155}{a4dc}
+\createlinenumber{156}{290e}
+\createlinenumber{157}{95cf}
+\createlinenumber{158}{95cf}
+\createlinenumber{159}{95cf}
+\createlinenumber{160}{95cf}
+\createlinenumber{161}{e8cd}
+\createlinenumber{162}{a85c}
+\createlinenumber{163}{b4d8}
+\createlinenumber{164}{95cf}
+\createlinenumber{165}{3f4c}
+\createlinenumber{166}{426c}
+\createlinenumber{167}{00f0}
+\createlinenumber{168}{7fd2}
+\createlinenumber{169}{89ad}
+\createlinenumber{170}{d921}
+\createlinenumber{171}{95cf}
+\createlinenumber{172}{95cf}
+\createlinenumber{173}{7639}
+\createlinenumber{174}{81fc}
+\createlinenumber{175}{a69f}
+\createlinenumber{176}{a69f}
+\createlinenumber{177}{ef2b}
+\createlinenumber{178}{42c9}
+\createlinenumber{179}{433d}
+\createlinenumber{180}{3076}
+\createlinenumber{181}{95cf}
+\createlinenumber{182}{329b}
+\createlinenumber{183}{427e}
+\begin{lstlisting}[language=C++]
+/* 支持上下界的最小费用S-T可行流
+ * 可兼作高效最小费用最大流实现
+ * template
+ *   <class W>     - the weight type
+ * struct MinCostFlow
+ *
+ * G.init(         - init graph
+ *    source node id, 
+ *    sink node id, 
+ *    node count,  - number of nodes, 0-based
+ *    epsilon,     - 0 for integer, 1e-6 for floats
+ *    inf,         - the weight upper bound
+ * )
+ * G.insert(       - insert an edge
+ *    u,           - first vertex
+ *    v,           - second vertex
+ *    lb,          - flow lower bound
+ *    ub,          - flow upper bound
+ *    cost         - unit edge cost (type is W)
+ * )
+ * G.work() returns the minimum cost.
+ */
+#include<iostream>
+#include<cstdio>
+#include<algorithm>
+#include<vector>
+#include<queue>
+#include<complex>
+using namespace std;
+
+template <class W>
+struct MinCostFlow {
+	struct Edge {
+		int u, v, cap, nxt;
+		W cost;
+		Edge &set(int _u,int _v,int _nxt,int _cap,W _cost) {
+			u=_u;v=_v;cost=_cost;cap=_cap;nxt=_nxt;
+			return *this;
+		}
+	};
+
+	vector<Edge> e;
+	vector<int> vst, head, que;
+	vector<W> dist;
+	vector<bool> mark;
+	int st, en, N, tot, ret;
+	W val, INF, EPS;
+
+	void init(int _s, int _t, int _n, W eps, W inf) {
+		head.resize(_n);
+		vst.resize(_n);
+		dist.resize(_n);
+		que.resize(_n);
+		mark.resize(_n);
+		st=_s;en=_t;N=_n;EPS=eps;INF=inf;
+		ret=0;val=0;tot=0;fill(head.begin(),head.end(),-1);
+	}
+
+	int dfs(int v, int cap) {
+		if(v == en) {
+			val += cap * dist[st];
+			return cap;
+		}
+		vst[v]=true;
+		int flow=0;
+		for(int i=head[v];i!=-1;i=e[i].nxt)
+			if(e[i].cap && ! vst[e[i].v] && abs(dist[e[i].v]+e[i].cost-dist[v])<=EPS) {
+				int det = dfs(e[i].v, min(cap, e[i].cap));
+				if(det) {
+					e[i].cap -= det; e[i^1].cap += det; flow += det;
+					if(!(cap-=det))break;
+				}
+			}
+		return flow;
+	}
+	int relabel() {
+		W det = INF;
+		for(int i=0;i<N;++i)
+			if(vst[i])
+				for(int j=head[i];j!=-1;j=e[j].nxt)
+					if(e[j].cap && !vst[e[j].v])
+						det = min(det, dist[e[j].v]+e[j].cost-dist[i]);
+		if(det==INF) return false;
+		for(int i=0;i<N;++i)
+			if(vst[i])dist[i]+=det;
+		return true;
+	}
+	int spfa() {
+		queue<int> que;
+		fill(vst.begin(),vst.end(),-1);
+		vst[en] = -2;
+		fill(dist.begin(),dist.end(),INF); dist[en]=0;
+		que.push(en);
+		fill(mark.begin(),mark.end(),false);
+		while(!que.empty()) {
+			int u = que.front(); que.pop();
+			mark[u]=false;
+			for(int i=head[u];i!=-1;i=e[i].nxt)
+				if(e[i^1].cap && dist[u]+e[i^1].cost<dist[e[i].v]) {
+					dist[e[i].v]=dist[u]+e[i^1].cost;vst[e[i].v]=i^1;
+					if(!mark[e[i].v]) {
+						mark[e[i].v]=true;
+						que.push(e[i].v);
+					}
+				}
+		}
+	}
+	void insert(int u, int v,int cap, W cost) {
+		e.push_back(Edge().set(u,v,head[u],cap,cost)); head[u]=tot++;
+		e.push_back(Edge().set(v,u,head[v],0,-cost)); head[v]=tot++;
+	}
+	void insert(int u, int v, int lo, int hi, W cost) {
+		if(hi > lo)
+			insert(u, v, hi-lo, cost);
+		if(lo > 0) {
+			insert(st, v, lo, cost);
+			insert(u, en, lo, 0);
+		}
+	}
+	W work() {
+		spfa();
+		do {
+			do {
+				fill(vst.begin(),vst.end(),false);
+			} while(dfs(st, 2147483647));
+		} while(relabel());
+		return val;
+	}
+};
+
+\end{lstlisting}
+\subsection{线性规划(单纯形)}
+\createlinenumber{184}{427e}
+\createlinenumber{185}{427e}
+\createlinenumber{186}{427e}
+\createlinenumber{187}{427e}
+\createlinenumber{188}{4fbb}
+\createlinenumber{189}{70b7}
+\createlinenumber{190}{053e}
+\createlinenumber{191}{3977}
+\createlinenumber{192}{f1cf}
+\createlinenumber{193}{0938}
+\createlinenumber{194}{d471}
+\createlinenumber{195}{bdad}
+\createlinenumber{196}{f7dc}
+\createlinenumber{197}{76b3}
+\createlinenumber{198}{e8d0}
+\createlinenumber{199}{8cfd}
+\createlinenumber{200}{f4db}
+\createlinenumber{201}{427e}
+\createlinenumber{202}{ce3a}
+\createlinenumber{203}{68bc}
+\createlinenumber{204}{35b8}
+\createlinenumber{205}{d126}
+\createlinenumber{206}{dead}
+\createlinenumber{207}{427e}
+\createlinenumber{208}{83d4}
+\createlinenumber{209}{ada3}
+\createlinenumber{210}{1e9c}
+\createlinenumber{211}{75b7}
+\createlinenumber{212}{1080}
+\createlinenumber{213}{6814}
+\createlinenumber{214}{531b}
+\createlinenumber{215}{95cf}
+\createlinenumber{216}{6340}
+\createlinenumber{217}{1c55}
+\createlinenumber{218}{c429}
+\createlinenumber{219}{6889}
+\createlinenumber{220}{f08e}
+\createlinenumber{221}{a898}
+\createlinenumber{222}{22bd}
+\createlinenumber{223}{5129}
+\createlinenumber{224}{f5ca}
+\createlinenumber{225}{e2e5}
+\createlinenumber{226}{8eb2}
+\createlinenumber{227}{95cf}
+\createlinenumber{228}{f08e}
+\createlinenumber{229}{a898}
+\createlinenumber{230}{be8e}
+\createlinenumber{231}{55c8}
+\createlinenumber{232}{5cdf}
+\createlinenumber{233}{f105}
+\createlinenumber{234}{8599}
+\createlinenumber{235}{0fc0}
+\createlinenumber{236}{7bbe}
+\createlinenumber{237}{8eb2}
+\createlinenumber{238}{95cf}
+\createlinenumber{239}{16f0}
+\createlinenumber{240}{9394}
+\createlinenumber{241}{329f}
+\createlinenumber{242}{95cf}
+\createlinenumber{243}{427e}
+\begin{lstlisting}[language=C++]
+// Simplex for linear programming
+// min. A(0, 0:n-1)
+// s.t. A(1:m, 0:n-1) x <= A(1:m, n)
+
+#define lp for(;;)
+#define repf(i,a,b)
+#define ft(i,a,b) for (int i=(a);i<=(b);++i)
+#define rep(i,n) for (int i=0;i<(n);++i)
+#define rtn return
+#define pb push_back
+#define mp make_pair
+#define sz(x) (int((x).size()))
+typedef double db;
+typedef vector<int> vi;
+db inf=1e+10;
+db eps=1e-10;
+inline int sgn(const db& x){rtn (x>+eps)-(x<-eps);}
+
+const int MAXN=500;
+const int MAXM=501;
+int n,m;
+db A[MAXM+1][MAXN+1],X[MAXN];
+int basis[MAXM+1],out[MAXN+1];
+
+void pivot(int a,int b) {
+  ft(i,0,m) if (i!=a&&sgn(A[i][b])) ft(j,0,n)
+    if (j!=b) A[i][j]-=A[a][j]*A[i][b]/A[a][b];
+  ft(j,0,n) if (j!=b) A[a][j]/=A[a][b];
+  ft(i,0,m) if (i!=a) A[i][b]/=-A[a][b];
+  A[a][b]=1/A[a][b];
+  swap(basis[a],out[b]);
+}
+db simplex() {
+  rep(j,n) A[0][j]=-A[0][j];
+  ft(i,0,m) basis[i]=-i;
+  ft(j,0,n) out[j]=j;
+  lp {
+    int ii=1,jj=0;
+    ft(i,1,m) if (mp(A[i][n],basis[i])<mp(A[ii][n],basis[ii])) ii=i;
+    if (A[ii][n]>=0) break;
+    rep(j,n) if (A[ii][j]<A[ii][jj]) jj=j;
+    if (A[ii][jj]>=0) rtn -inf;
+    pivot(ii,jj);
+  }
+  lp {
+    int ii=1,jj=0;
+    rep(j,n) if (mp(A[0][j],out[j])<mp(A[0][jj],out[jj])) jj=j;
+    if (A[0][jj]>=0) break;
+    ft(i,1,m)
+      if (A[i][jj]>0&&(A[ii][jj]<=0||mp(A[i][n]/A[i][jj],basis[i])
+        <mp(A[ii][n]/A[ii][jj],basis[ii])))
+        ii=i;
+    if (A[ii][jj]<=0) rtn +inf;
+    pivot(ii,jj);
+  }
+  rep(j,n) X[j]=0;
+  ft(i,1,m) if (basis[i]>=0) X[basis[i]]=A[i][n];
+  rtn A[0][n];
+}
+
+\end{lstlisting}
+\section{数论}
+\subsection{二次剩余}
+\createlinenumber{244}{1915}
+\createlinenumber{245}{e0a5}
+\createlinenumber{246}{9a97}
+\createlinenumber{247}{421c}
+\createlinenumber{248}{427e}
+\createlinenumber{249}{a7e2}
+\createlinenumber{250}{3428}
+\createlinenumber{251}{4e00}
+\createlinenumber{252}{427e}
+\createlinenumber{253}{e79e}
+\createlinenumber{254}{025c}
+\createlinenumber{255}{95cf}
+\createlinenumber{256}{427e}
+\createlinenumber{257}{a3a5}
+\createlinenumber{258}{0829}
+\createlinenumber{259}{4610}
+\createlinenumber{260}{4f4f}
+\createlinenumber{261}{95cf}
+\createlinenumber{262}{427e}
+\createlinenumber{263}{f245}
+\createlinenumber{264}{251d}
+\createlinenumber{265}{8c20}
+\createlinenumber{266}{be0f}
+\createlinenumber{267}{8fec}
+\createlinenumber{268}{4206}
+\createlinenumber{269}{95cf}
+\createlinenumber{270}{427e}
+\createlinenumber{271}{ca53}
+\createlinenumber{272}{b045}
+\createlinenumber{273}{95cf}
+\createlinenumber{274}{427e}
+\createlinenumber{275}{3036}
+\createlinenumber{276}{6871}
+\createlinenumber{277}{bc97}
+\createlinenumber{278}{f061}
+\createlinenumber{279}{95cf}
+\createlinenumber{280}{427e}
+\createlinenumber{281}{2ff8}
+\createlinenumber{282}{bf85}
+\createlinenumber{283}{0a41}
+\createlinenumber{284}{6e08}
+\createlinenumber{285}{d512}
+\createlinenumber{286}{427e}
+\createlinenumber{287}{1026}
+\createlinenumber{288}{e166}
+\createlinenumber{289}{8486}
+\createlinenumber{290}{4976}
+\createlinenumber{291}{2e24}
+\createlinenumber{292}{6645}
+\createlinenumber{293}{af97}
+\createlinenumber{294}{d074}
+\createlinenumber{295}{95cf}
+\createlinenumber{296}{95cf}
+\createlinenumber{297}{95cf}
+\createlinenumber{298}{329b}
+\createlinenumber{299}{427e}
+\createlinenumber{300}{427e}
+\createlinenumber{301}{427e}
+\createlinenumber{302}{3117}
+\createlinenumber{303}{30aa}
+\createlinenumber{304}{427b}
+\createlinenumber{305}{8661}
+\createlinenumber{306}{3c2f}
+\createlinenumber{307}{ac98}
+\createlinenumber{308}{44c8}
+\createlinenumber{309}{7172}
+\createlinenumber{310}{20d0}
+\createlinenumber{311}{037f}
+\createlinenumber{312}{5354}
+\createlinenumber{313}{2b81}
+\createlinenumber{314}{95cf}
+\createlinenumber{315}{95cf}
+\createlinenumber{316}{7021}
+\createlinenumber{317}{95cf}
+\createlinenumber{318}{427e}
+\begin{mdframed}[hidealllines=true,backgroundcolor=blue!5]
+求最小的$0\le x < p$满足$x^2=n\ (\mathrm{mod}\ p)$ ($p$是素数)。不存在时返回$-1$。
+\end{mdframed}\vspace{-10pt}
+\begin{lstlisting}[language=C++]
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
+
+struct QuadraticResidue {
+  typedef long long int64;
+  typedef pair<int64, int64> QuadraticNum;
+
+  inline int64 Sqr(int64 a) {
+    return a * a;
+  }
+
+  int64 Exp(int64 a, int64 n, int64 mod) {
+    if (n == 0) return 1;
+    if (n & 1) return Sqr(Exp(a, n >> 1, mod)) % mod * a % mod;
+    else return Sqr(Exp(a, n >> 1, mod)) % mod;
+  }
+
+  int64 inx;
+  QuadraticNum QuadraticMul(const QuadraticNum a, const QuadraticNum b, const int mod) {
+    QuadraticNum ans;
+    ans.first = (a.first * b.first % mod + a.second * b.second % mod * inx % mod) % mod;
+    ans.second = (a.first * b.second % mod + a.second * b.first % mod) % mod;
+    return ans;
+  }
+
+  QuadraticNum Sqr(QuadraticNum a, int mod) {
+    return QuadraticMul(a, a, mod);
+  }
+
+  QuadraticNum Exp(QuadraticNum a, int n, int mod) {
+    if (n == 0) return QuadraticNum(1, 0);
+    if (n & 1) return QuadraticMul(Sqr(Exp(a, n >> 1, mod), mod), a, mod);
+    else return Sqr(Exp(a, n >> 1, mod), mod);
+  }
+
+  int GetRoot(int n, int m) {
+    n = (n % m + m) % m;
+    if (n == 0) return 0;
+    if (m == 2) return 1;
+    if ((Exp(n, (m - 1) / 2, m) + m) % m == m - 1) return -1;
+    // x does not exist.
+    while (true) {
+      int i = rand() % m;
+      inx = ((int64)i * i - n) % m;
+      if ((Exp(inx, (m - 1) / 2, m) + m) % m == m - 1) {
+        int x = (Exp(QuadraticNum(i, 1), (m + 1) / 2, m).first + m) % m;
+        int y = m - x;
+        if (x > y) swap(x, y);
+        return x;
+      }
+    }
+  }
+};
+
+// This shows how to use it. 
+// You can submit on http://acm.timus.ru/problem.aspx?space=1&num=1132
+int main() {
+  int t, n, m;
+  QuadraticResidue quadratic_residue;
+  scanf("%d", &t);
+  while (t--) {
+    scanf("%d%d", &n, &m);
+    int root = quadratic_residue.GetRoot(n, m);
+    if (root == -1)
+      printf("No root\n");
+    else {
+      if (root + root == m) printf("%d\n", root);
+      else printf("%d %d\n", root, m - root);
+    }
+  }
+  return 0;
+}
+
+\end{lstlisting}
+\section{Watashi代码库(备用)}
+\subsection{$O(n\log n)-O(1)$ RMQ}
+\createlinenumber{319}{9581}
+\createlinenumber{320}{54ff}
+\createlinenumber{321}{427e}
+\createlinenumber{322}{421c}
+\createlinenumber{323}{427e}
+\createlinenumber{324}{b7ec}
+\createlinenumber{325}{1f3e}
+\createlinenumber{326}{5c83}
+\createlinenumber{327}{bd3a}
+\createlinenumber{328}{f687}
+\createlinenumber{329}{427e}
+\createlinenumber{330}{de2b}
+\createlinenumber{331}{eeb3}
+\createlinenumber{332}{449d}
+\createlinenumber{333}{427e}
+\createlinenumber{334}{6413}
+\createlinenumber{335}{cdf9}
+\createlinenumber{336}{95cf}
+\createlinenumber{337}{427e}
+\createlinenumber{338}{01c5}
+\createlinenumber{339}{b985}
+\createlinenumber{340}{40f2}
+\createlinenumber{341}{427e}
+\createlinenumber{342}{dcba}
+\createlinenumber{343}{f312}
+\createlinenumber{344}{1114}
+\createlinenumber{345}{95cf}
+\createlinenumber{346}{1730}
+\createlinenumber{347}{427e}
+\createlinenumber{348}{6c2f}
+\createlinenumber{349}{ac66}
+\createlinenumber{350}{95cf}
+\createlinenumber{351}{b0ef}
+\createlinenumber{352}{6941}
+\createlinenumber{353}{d8a7}
+\createlinenumber{354}{95cf}
+\createlinenumber{355}{95cf}
+\createlinenumber{356}{95cf}
+\createlinenumber{357}{427e}
+\createlinenumber{358}{7689}
+\createlinenumber{359}{083c}
+\createlinenumber{360}{db43}
+\createlinenumber{361}{95cf}
+\createlinenumber{362}{427e}
+\createlinenumber{363}{6e14}
+\createlinenumber{364}{72b5}
+\createlinenumber{365}{95cf}
+\createlinenumber{366}{329b}
+\createlinenumber{367}{427e}
+\createlinenumber{368}{427e}
+\begin{lstlisting}[language=C++]
+#include <climits>    // CHAR_BIT
+#include <algorithm>  // copy
+
+using namespace std;
+
+template<typename T>
+struct RMQ {
+  int n;
+  vector<T> e;
+  vector<vector<int> > rmq;
+
+  static const int INT_BIT = sizeof(4) * CHAR_BIT;
+  static inline int LG2(int i) { return INT_BIT - 1 - __builtin_clz(i); }
+  static inline int BIN(int i) { return 1 << i; }
+
+  int cmp(int l, int r) const {
+    return e[l] <= e[r] ? l : r;
+  }
+
+  void init(int n, const T e[]) {
+    this->n = n;
+    vector<T>(e, e + n).swap(this->e);
+
+    int m = 1;
+    while (BIN(m) <= n) {
+      ++m;
+    }
+    vector<vector<int> >(m, vector<int>(n)).swap(rmq);
+
+    for (int i = 0; i < n; ++i) {
+      rmq[0][i] = i;
+    }
+    for (int i = 0; BIN(i + 1) <= n; ++i) {
+      for (int j = 0; j + BIN(i + 1) <= n; ++j) {
+        rmq[i + 1][j] = cmp(rmq[i][j], rmq[i][j + BIN(i)]);
+      }
+    }
+  }
+
+  int index(int l, int r) const {
+    int b = LG2(r - l);
+    return cmp(rmq[b][l], rmq[b][r - (1 << b)]);
+  }
+
+  T value(int l, int r) const {
+    return e[index(l, r)];
+  }
+};
+
+
+\end{lstlisting}
+\subsection{$O(n\log n)-O(\log n)$ LCA}
+\createlinenumber{369}{59b9}
+\createlinenumber{370}{09f7}
+\createlinenumber{371}{54ff}
+\createlinenumber{372}{427e}
+\createlinenumber{373}{421c}
+\createlinenumber{374}{427e}
+\createlinenumber{375}{3bd6}
+\createlinenumber{376}{b0bb}
+\createlinenumber{377}{427e}
+\createlinenumber{378}{427e}
+\createlinenumber{379}{6dd4}
+\createlinenumber{380}{6910}
+\createlinenumber{381}{6058}
+\createlinenumber{382}{427e}
+\createlinenumber{383}{de24}
+\createlinenumber{384}{c4a8}
+\createlinenumber{385}{67b8}
+\createlinenumber{386}{47b3}
+\createlinenumber{387}{95cf}
+\createlinenumber{388}{6bea}
+\createlinenumber{389}{2389}
+\createlinenumber{390}{2732}
+\createlinenumber{391}{1e13}
+\createlinenumber{392}{3245}
+\createlinenumber{393}{95cf}
+\createlinenumber{394}{95cf}
+\createlinenumber{395}{95cf}
+\createlinenumber{396}{427e}
+\createlinenumber{397}{6074}
+\createlinenumber{398}{3b30}
+\createlinenumber{399}{1fe0}
+\createlinenumber{400}{bbaa}
+\createlinenumber{401}{95cf}
+\createlinenumber{402}{95cf}
+\createlinenumber{403}{aa78}
+\createlinenumber{404}{95cf}
+\createlinenumber{405}{427e}
+\createlinenumber{406}{8119}
+\createlinenumber{407}{e7ce}
+\createlinenumber{408}{4012}
+\createlinenumber{409}{95cf}
+\createlinenumber{410}{66a3}
+\createlinenumber{411}{59db}
+\createlinenumber{412}{5ffd}
+\createlinenumber{413}{8e2e}
+\createlinenumber{414}{08b5}
+\createlinenumber{415}{7ecb}
+\createlinenumber{416}{434f}
+\createlinenumber{417}{f29b}
+\createlinenumber{418}{95cf}
+\createlinenumber{419}{95cf}
+\createlinenumber{420}{d21f}
+\createlinenumber{421}{95cf}
+\createlinenumber{422}{95cf}
+\createlinenumber{423}{427e}
+\createlinenumber{424}{d34f}
+\createlinenumber{425}{6c2f}
+\createlinenumber{426}{c9ff}
+\createlinenumber{427}{95cf}
+\createlinenumber{428}{95cf}
+\createlinenumber{429}{427e}
+\createlinenumber{430}{77e3}
+\createlinenumber{431}{486c}
+\createlinenumber{432}{800c}
+\createlinenumber{433}{95cf}
+\createlinenumber{434}{427e}
+\createlinenumber{435}{2114}
+\createlinenumber{436}{3dbe}
+\createlinenumber{437}{e5db}
+\createlinenumber{438}{95cf}
+\createlinenumber{439}{a83c}
+\createlinenumber{440}{427e}
+\createlinenumber{441}{427e}
+\begin{lstlisting}[language=C++]
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+const int MAXM = 16;
+const int MAXN = 1 << MAXM;
+
+// LCA
+struct LCA {
+  vector<int> e[MAXN];
+  int d[MAXN], p[MAXN][MAXM];
+
+  void dfs_(int v, int f) {
+    p[v][0] = f;
+    for (int i = 1; i < MAXM; ++i) {
+      p[v][i] = p[p[v][i - 1]][i - 1];
+    }
+    for (int i = 0; i < (int)e[v].size(); ++i) {
+      int w = e[v][i];
+      if (w != f) {
+        d[w] = d[v] + 1;
+        dfs_(w, v);
+      }
+    }
+  }
+
+  int up_(int v, int m) {
+    for (int i = 0; i < MAXM; ++i) {
+      if (m & (1 << i)) {
+        v = p[v][i];
+      }
+    }
+    return v;
+  }
+
+  int lca(int a, int b) {
+    if (d[a] > d[b]) {
+      swap(a, b);
+    }
+    b = up_(b, d[b] - d[a]);
+    if (a == b) {
+      return a;
+    } else {
+      for (int i = MAXM - 1; i >= 0; --i) {
+        if (p[a][i] != p[b][i]) {
+          a = p[a][i];
+          b = p[b][i];
+        }
+      }
+      return p[a][0];
+    }
+  }
+
+  void init(int n) {
+    for (int i = 0; i < n; ++i) {
+      e[i].clear();
+    }
+  }
+
+  void add(int a, int b) {
+    e[a].push_back(b);
+    e[b].push_back(a);
+  }
+
+  void build() {
+    d[0] = 0;
+    dfs_(0, 0);
+  }
+} lca;
+
+
+\end{lstlisting}
+\subsection{树状数组}
+\createlinenumber{442}{09f7}
+\createlinenumber{443}{427e}
+\createlinenumber{444}{421c}
+\createlinenumber{445}{427e}
+\createlinenumber{446}{ad8a}
+\createlinenumber{447}{5f7d}
+\createlinenumber{448}{ab5c}
+\createlinenumber{449}{427e}
+\createlinenumber{450}{d34f}
+\createlinenumber{451}{7f29}
+\createlinenumber{452}{95cf}
+\createlinenumber{453}{427e}
+\createlinenumber{454}{853b}
+\createlinenumber{455}{13ab}
+\createlinenumber{456}{a45a}
+\createlinenumber{457}{95cf}
+\createlinenumber{458}{95cf}
+\createlinenumber{459}{427e}
+\createlinenumber{460}{427e}
+\createlinenumber{461}{9992}
+\createlinenumber{462}{951c}
+\createlinenumber{463}{b76f}
+\createlinenumber{464}{2a23}
+\createlinenumber{465}{95cf}
+\createlinenumber{466}{ee0f}
+\createlinenumber{467}{95cf}
+\createlinenumber{468}{427e}
+\createlinenumber{469}{7517}
+\createlinenumber{470}{da02}
+\createlinenumber{471}{95cf}
+\createlinenumber{472}{427e}
+\createlinenumber{473}{bb52}
+\createlinenumber{474}{7c32}
+\createlinenumber{475}{95cf}
+\createlinenumber{476}{329b}
+\createlinenumber{477}{427e}
+\createlinenumber{478}{427e}
+\begin{lstlisting}[language=C++]
+#include <vector>
+
+using namespace std;
+
+template<typename T = int>
+struct BIT {
+  vector<T> a;
+
+  void init(int n) {
+    vector<T>(n + 1).swap(a);
+  }
+
+  void add(int i, T v) {
+    for (int j = i + 1; j < (int)a.size(); j = (j | (j - 1)) + 1) {
+      a[j] += v;
+    }
+  }
+
+  // [0, i)
+  T sum(int i) const {
+    T ret = T();
+    for (int j = i; j > 0; j = j & (j - 1)) {
+      ret += a[j];
+    }
+    return ret;
+  }
+
+  T get(int i) const {
+    return sum(i + 1) - sum(i);
+  }
+
+  void set(int i, T v) {
+    add(i, v - get(i));
+  }
+};
+
+
+\end{lstlisting}
+\subsection{并查集}
+\createlinenumber{479}{09f7}
+\createlinenumber{480}{427e}
+\createlinenumber{481}{421c}
+\createlinenumber{482}{427e}
+\createlinenumber{483}{c793}
+\createlinenumber{484}{7521}
+\createlinenumber{485}{427e}
+\createlinenumber{486}{d34f}
+\createlinenumber{487}{9156}
+\createlinenumber{488}{6c2f}
+\createlinenumber{489}{a208}
+\createlinenumber{490}{95cf}
+\createlinenumber{491}{95cf}
+\createlinenumber{492}{427e}
+\createlinenumber{493}{8b08}
+\createlinenumber{494}{a584}
+\createlinenumber{495}{95cf}
+\createlinenumber{496}{427e}
+\createlinenumber{497}{7fac}
+\createlinenumber{498}{8b35}
+\createlinenumber{499}{e8c6}
+\createlinenumber{500}{df09}
+\createlinenumber{501}{29ee}
+\createlinenumber{502}{95cf}
+\createlinenumber{503}{329b}
+\createlinenumber{504}{427e}
+\begin{lstlisting}[language=C++]
+#include <vector>
+
+using namespace std;
+
+struct DisjointSet {
+  vector<int> p;
+
+  void init(int n) {
+    p.resize(n);
+    for (int i = 0; i < n; ++i) {
+      p[i] = i;
+    }
+  }
+
+  int getp(int i) {
+    return i == p[i] ? i : (p[i] = getp(p[i]));
+  }
+
+  bool setp(int i, int j) {
+    i = getp(i);
+    j = getp(j);
+    p[i] = j;
+    return i != j;
+  }
+};
+
+\end{lstlisting}
+\subsection{轻重权树剖分}
+\createlinenumber{505}{59b9}
+\createlinenumber{506}{09f7}
+\createlinenumber{507}{54ff}
+\createlinenumber{508}{427e}
+\createlinenumber{509}{421c}
+\createlinenumber{510}{427e}
+\createlinenumber{511}{3bd6}
+\createlinenumber{512}{b0bb}
+\createlinenumber{513}{427e}
+\createlinenumber{514}{427e}
+\createlinenumber{515}{b49e}
+\createlinenumber{516}{1769}
+\createlinenumber{517}{4971}
+\createlinenumber{518}{9524}
+\createlinenumber{519}{448c}
+\createlinenumber{520}{a6ab}
+\createlinenumber{521}{d16b}
+\createlinenumber{522}{427e}
+\createlinenumber{523}{de24}
+\createlinenumber{524}{e350}
+\createlinenumber{525}{5172}
+\createlinenumber{526}{6bea}
+\createlinenumber{527}{2389}
+\createlinenumber{528}{2732}
+\createlinenumber{529}{3245}
+\createlinenumber{530}{ea7a}
+\createlinenumber{531}{95cf}
+\createlinenumber{532}{95cf}
+\createlinenumber{533}{95cf}
+\createlinenumber{534}{427e}
+\createlinenumber{535}{a22f}
+\createlinenumber{536}{fd9c}
+\createlinenumber{537}{048a}
+\createlinenumber{538}{eb44}
+\createlinenumber{539}{427e}
+\createlinenumber{540}{e6d1}
+\createlinenumber{541}{6bea}
+\createlinenumber{542}{2389}
+\createlinenumber{543}{2732}
+\createlinenumber{544}{08e1}
+\createlinenumber{545}{3089}
+\createlinenumber{546}{35ea}
+\createlinenumber{547}{95cf}
+\createlinenumber{548}{95cf}
+\createlinenumber{549}{95cf}
+\createlinenumber{550}{bee4}
+\createlinenumber{551}{f904}
+\createlinenumber{552}{95cf}
+\createlinenumber{553}{427e}
+\createlinenumber{554}{6bea}
+\createlinenumber{555}{2389}
+\createlinenumber{556}{6e71}
+\createlinenumber{557}{9768}
+\createlinenumber{558}{95cf}
+\createlinenumber{559}{95cf}
+\createlinenumber{560}{95cf}
+\createlinenumber{561}{427e}
+\createlinenumber{562}{d34f}
+\createlinenumber{563}{6c2f}
+\createlinenumber{564}{c9ff}
+\createlinenumber{565}{95cf}
+\createlinenumber{566}{95cf}
+\createlinenumber{567}{427e}
+\createlinenumber{568}{77e3}
+\createlinenumber{569}{486c}
+\createlinenumber{570}{800c}
+\createlinenumber{571}{95cf}
+\createlinenumber{572}{427e}
+\createlinenumber{573}{2114}
+\createlinenumber{574}{d7ef}
+\createlinenumber{575}{e5db}
+\createlinenumber{576}{917b}
+\createlinenumber{577}{95cf}
+\createlinenumber{578}{8dca}
+\createlinenumber{579}{427e}
+\createlinenumber{580}{427e}
+\begin{lstlisting}[language=C++]
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+const int MAXM = 16;
+const int MAXN = 1 << MAXM;
+
+// Heavy-Light Decomposition
+struct TreeDecomposition {
+  vector<int> e[MAXN], c[MAXN];
+  int s[MAXN];    // subtree size
+  int p[MAXN];    // parent id
+  int r[MAXN];    // chain root id
+  int t[MAXN];    // timestamp, index used in segtree
+  int ts;
+
+  void dfs_(int v, int f) {
+    p[v] = f;
+    s[v] = 1;
+    for (int i = 0; i < (int)e[v].size(); ++i) {
+      int w = e[v][i];
+      if (w != f) {
+        dfs_(w, v);
+        s[v] += s[w];
+      }
+    }
+  }
+
+  void decomp_(int v, int f, int k) {
+    t[v] = ts++;
+    c[k].push_back(v);
+    r[v] = k;
+
+    int x = 0, y = -1;
+    for (int i = 0; i < (int)e[v].size(); ++i) {
+      int w = e[v][i];
+      if (w != f) {
+        if (s[w] > x) {
+          x = s[w];
+          y = w;
+        }
+      }
+    }
+    if (y != -1) {
+      decomp_(y, v, k);
+    }
+
+    for (int i = 0; i < (int)e[v].size(); ++i) {
+      int w = e[v][i];
+      if (w != f && w != y) {
+        decomp_(w, v, w);
+      }
+    }
+  }
+
+  void init(int n) {
+    for (int i = 0; i < n; ++i) {
+      e[i].clear();
+    }
+  }
+
+  void add(int a, int b) {
+    e[a].push_back(b);
+    e[b].push_back(a);
+  }
+
+  void build() {  // !!
+    ts = 0;
+    dfs_(0, 0);
+    decomp_(0, 0, 0);
+  }
+} hld;
+
+
+\end{lstlisting}
+\subsection{强连通分量}
+\createlinenumber{581}{8207}
+\createlinenumber{582}{09f7}
+\createlinenumber{583}{54ff}
+\createlinenumber{584}{427e}
+\createlinenumber{585}{421c}
+\createlinenumber{586}{427e}
+\createlinenumber{587}{9356}
+\createlinenumber{588}{5c83}
+\createlinenumber{589}{9d4c}
+\createlinenumber{590}{427e}
+\createlinenumber{591}{fbd2}
+\createlinenumber{592}{e01d}
+\createlinenumber{593}{427e}
+\createlinenumber{594}{d34f}
+\createlinenumber{595}{b985}
+\createlinenumber{596}{4883}
+\createlinenumber{597}{a1b9}
+\createlinenumber{598}{94d6}
+\createlinenumber{599}{021f}
+\createlinenumber{600}{95cf}
+\createlinenumber{601}{427e}
+\createlinenumber{602}{77e3}
+\createlinenumber{603}{486c}
+\createlinenumber{604}{95cf}
+\createlinenumber{605}{427e}
+\createlinenumber{606}{5728}
+\createlinenumber{607}{724e}
+\createlinenumber{608}{9cad}
+\createlinenumber{609}{427e}
+\createlinenumber{610}{3dd3}
+\createlinenumber{611}{d2b0}
+\createlinenumber{612}{daec}
+\createlinenumber{613}{d819}
+\createlinenumber{614}{b9fe}
+\createlinenumber{615}{650e}
+\createlinenumber{616}{0402}
+\createlinenumber{617}{181c}
+\createlinenumber{618}{e5cc}
+\createlinenumber{619}{f480}
+\createlinenumber{620}{95cf}
+\createlinenumber{621}{95cf}
+\createlinenumber{622}{427e}
+\createlinenumber{623}{01f5}
+\createlinenumber{624}{8631}
+\createlinenumber{625}{a69f}
+\createlinenumber{626}{5973}
+\createlinenumber{627}{c2f4}
+\createlinenumber{628}{11f8}
+\createlinenumber{629}{7783}
+\createlinenumber{630}{b819}
+\createlinenumber{631}{e8fd}
+\createlinenumber{632}{6cf2}
+\createlinenumber{633}{95cf}
+\createlinenumber{634}{95cf}
+\createlinenumber{635}{427e}
+\createlinenumber{636}{3cca}
+\createlinenumber{637}{efaa}
+\createlinenumber{638}{4810}
+\createlinenumber{639}{22e0}
+\createlinenumber{640}{427e}
+\createlinenumber{641}{d38c}
+\createlinenumber{642}{6c2f}
+\createlinenumber{643}{e5ea}
+\createlinenumber{644}{4ee6}
+\createlinenumber{645}{95cf}
+\createlinenumber{646}{95cf}
+\createlinenumber{647}{d58b}
+\createlinenumber{648}{95cf}
+\createlinenumber{649}{329b}
+\createlinenumber{650}{427e}
+\createlinenumber{651}{427e}
+\begin{lstlisting}[language=C++]
+#include <stack>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct SCCTarjan {
+  int n;
+  vector<vector<int> > e;
+
+  vector<int> id;
+  vector<vector<int> > scc;
+
+  void init(int n) {
+    this->n = n;
+    vector<vector<int> >(n).swap(e);
+    id.resize(n);
+    dfn.resize(n);
+    low.resize(n);
+  }
+
+  void add(int a, int b) {
+    e[a].push_back(b);
+  }
+
+  vector<int> dfn, low;
+  int timestamp;
+  stack<int> s;
+
+  void dfs(int v) {
+    dfn[v] = timestamp++;
+    low[v] = dfn[v];
+    s.push(v);
+    for (vector<int>::const_iterator w = e[v].begin(); w != e[v].end(); ++w) {
+      if (dfn[*w] == -1) {
+        dfs(*w);
+        low[v] = min(low[v], low[*w]);
+      } else if (dfn[*w] != -2) {
+        low[v] = min(low[v], dfn[*w]);
+      }
+    }
+
+    if (low[v] == dfn[v]) {
+      vector<int> t;
+      do {
+        int w = s.top();
+        s.pop();
+        id[w] = (int)scc.size();
+        t.push_back(w);
+        dfn[w] = -2;
+      } while (t.back() != v);
+      scc.push_back(t);
+    }
+  }
+
+  int gao() {
+    scc.clear();
+    stack<int>().swap(s);
+    timestamp = 0;
+
+    fill(dfn.begin(), dfn.end(), -1);
+    for (int i = 0; i < n; ++i) {
+      if (dfn[i] == -1) {
+        dfs(i);
+      }
+    }
+    return (int)scc.size();
+  }
+};
+
+
+\end{lstlisting}
+\subsection{双连通分量}
+\createlinenumber{652}{8207}
+\createlinenumber{653}{09f7}
+\createlinenumber{654}{0947}
+\createlinenumber{655}{54ff}
+\createlinenumber{656}{427e}
+\createlinenumber{657}{421c}
+\createlinenumber{658}{427e}
+\createlinenumber{659}{427e}
+\createlinenumber{660}{0ff2}
+\createlinenumber{661}{5c83}
+\createlinenumber{662}{9d4c}
+\createlinenumber{663}{427e}
+\createlinenumber{664}{b973}
+\createlinenumber{665}{5b05}
+\createlinenumber{666}{2eab}
+\createlinenumber{667}{427e}
+\createlinenumber{668}{d34f}
+\createlinenumber{669}{b985}
+\createlinenumber{670}{c568}
+\createlinenumber{671}{bea5}
+\createlinenumber{672}{94d6}
+\createlinenumber{673}{021f}
+\createlinenumber{674}{95cf}
+\createlinenumber{675}{427e}
+\createlinenumber{676}{77e3}
+\createlinenumber{677}{427e}
+\createlinenumber{678}{486c}
+\createlinenumber{679}{800c}
+\createlinenumber{680}{95cf}
+\createlinenumber{681}{427e}
+\createlinenumber{682}{5728}
+\createlinenumber{683}{724e}
+\createlinenumber{684}{76f7}
+\createlinenumber{685}{427e}
+\createlinenumber{686}{98cc}
+\createlinenumber{687}{bb18}
+\createlinenumber{688}{9db1}
+\createlinenumber{689}{b9fe}
+\createlinenumber{690}{05c2}
+\createlinenumber{691}{650e}
+\createlinenumber{692}{7328}
+\createlinenumber{693}{9bb2}
+\createlinenumber{694}{181c}
+\createlinenumber{695}{c27b}
+\createlinenumber{696}{427e}
+\createlinenumber{697}{235d}
+\createlinenumber{698}{5659}
+\createlinenumber{699}{95cf}
+\createlinenumber{700}{427e}
+\createlinenumber{701}{def0}
+\createlinenumber{702}{fc5c}
+\createlinenumber{703}{95cf}
+\createlinenumber{704}{427e}
+\createlinenumber{705}{31f9}
+\createlinenumber{706}{a69f}
+\createlinenumber{707}{d8ed}
+\createlinenumber{708}{c2f4}
+\createlinenumber{709}{0e21}
+\createlinenumber{710}{79d2}
+\createlinenumber{711}{95cf}
+\createlinenumber{712}{3597}
+\createlinenumber{713}{7328}
+\createlinenumber{714}{f480}
+\createlinenumber{715}{95cf}
+\createlinenumber{716}{95cf}
+\createlinenumber{717}{95cf}
+\createlinenumber{718}{427e}
+\createlinenumber{719}{eb55}
+\createlinenumber{720}{052d}
+\createlinenumber{721}{7a64}
+\createlinenumber{722}{2b46}
+\createlinenumber{723}{427e}
+\createlinenumber{724}{22e0}
+\createlinenumber{725}{ef66}
+\createlinenumber{726}{d38c}
+\createlinenumber{727}{427e}
+\createlinenumber{728}{6c2f}
+\createlinenumber{729}{e5ea}
+\createlinenumber{730}{e343}
+\createlinenumber{731}{95cf}
+\createlinenumber{732}{95cf}
+\createlinenumber{733}{95cf}
+\createlinenumber{734}{329b}
+\createlinenumber{735}{427e}
+\createlinenumber{736}{427e}
+\createlinenumber{737}{0f18}
+\createlinenumber{738}{43ad}
+\createlinenumber{739}{76c3}
+\createlinenumber{740}{6910}
+\createlinenumber{741}{427e}
+\createlinenumber{742}{d34f}
+\createlinenumber{743}{5e72}
+\createlinenumber{744}{37f8}
+\createlinenumber{745}{95cf}
+\createlinenumber{746}{427e}
+\createlinenumber{747}{77e3}
+\createlinenumber{748}{1cf2}
+\createlinenumber{749}{95cf}
+\createlinenumber{750}{427e}
+\createlinenumber{751}{eb55}
+\createlinenumber{752}{e6ec}
+\createlinenumber{753}{87a1}
+\createlinenumber{754}{75dc}
+\createlinenumber{755}{3273}
+\createlinenumber{756}{e387}
+\createlinenumber{757}{95cf}
+\createlinenumber{758}{95cf}
+\createlinenumber{759}{95cf}
+\createlinenumber{760}{cdda}
+\createlinenumber{761}{28e1}
+\createlinenumber{762}{9ba6}
+\createlinenumber{763}{486c}
+\createlinenumber{764}{800c}
+\createlinenumber{765}{95cf}
+\createlinenumber{766}{95cf}
+\createlinenumber{767}{427e}
+\createlinenumber{768}{c12a}
+\createlinenumber{769}{deff}
+\createlinenumber{770}{95cf}
+\createlinenumber{771}{329b}
+\createlinenumber{772}{427e}
+\begin{lstlisting}[language=C++]
+#include <stack>
+#include <vector>
+#include <utility>
+#include <algorithm>
+
+using namespace std;
+
+// TODO: cannot handle duplicate edges
+struct Tarjan {
+  int n;
+  vector<vector<int> > e;
+
+  vector<int> cut;
+  vector<pair<int, int> > bridge;
+  vector<vector<pair<int, int> > > bcc;
+
+  void init(int n) {
+    this->n = n;
+    e.clear();
+    e.resize(n);
+    dfn.resize(n);
+    low.resize(n);
+  }
+
+  void add(int a, int b) {
+    // assert(find(e[a].begin(), e[a].end(), b) == e[a].end());
+    e[a].push_back(b);
+    e[b].push_back(a);
+  }
+
+  vector<int> dfn, low;
+  int timestamp;
+  stack<pair<int, int> > s;
+
+  void dfs(int v, int p) {
+    int part = p == -1 ? 0 : 1;
+    dfn[v] = low[v] = timestamp++;
+    for (vector<int>::const_iterator w = e[v].begin(); w != e[v].end(); ++w) {
+      pair<int, int> f = make_pair(min(v, *w), max(v, *w));
+      if (dfn[*w] == -1) {
+        s.push(f);
+        dfs(*w, v);
+        low[v] = min(low[v], low[*w]);
+        if (dfn[v] <= low[*w]) {
+          // articulation point
+          if (++part == 2) {
+            cut.push_back(v);
+          }
+          // articulation edge
+          if (dfn[v] < low[*w]) {
+            bridge.push_back(f);
+          }
+          // biconnected component (2-vertex-connected)
+          vector<pair<int, int> > t;
+          do {
+            t.push_back(s.top());
+            s.pop();
+          } while (t.back() != f);
+          bcc.push_back(t);
+        }
+      } else if (*w != p && dfn[*w] < dfn[v]) {
+        s.push(f);
+        low[v] = min(low[v], dfn[*w]);
+      }
+    }
+  }
+
+  void gao() {
+    cut.clear();
+    bridge.clear();
+    bcc.clear();
+
+    timestamp = 0;
+    stack<pair<int, int> >().swap(s);
+    fill(dfn.begin(), dfn.end(), -1);
+
+    for (int i = 0; i < n; ++i) {
+      if (dfn[i] == -1) {
+        dfs(i, -1);
+      }
+    }
+  }
+};
+
+
+struct BridgeBlockTree {
+  Tarjan<MAXN> bcc;
+  DisjointSet<MAXN> ds;
+  vector<int> e[MAXN];
+
+  void init(int n) {
+    bcc.init(n);
+    ds.init(n);
+  }
+
+  void add(int a, int b) {
+    bcc.add(a, b);
+  }
+
+  void gao() {
+    bcc.gao();
+    for (const auto& i: bcc.bcc) {
+      if (i.size() > 1) {
+        for (const auto& j: i) {
+          ds.setp(j.first, j.second);
+        }
+      }
+    }
+    for (const auto& i: bcc.bridge) {
+      int a = ds.getp(i.first);
+      int b = ds.getp(i.second);
+      e[a].push_back(b);
+      e[b].push_back(a);
+    }
+  }
+
+  int id(int v) {
+    return ds.getp(v);
+  }
+};
+
+\end{lstlisting}
+\subsection{二分图匹配}
+\createlinenumber{773}{427e}
+\createlinenumber{774}{427e}
+\createlinenumber{775}{427e}
+\createlinenumber{776}{427e}
+\createlinenumber{777}{09f7}
+\createlinenumber{778}{2349}
+\createlinenumber{779}{54ff}
+\createlinenumber{780}{427e}
+\createlinenumber{781}{421c}
+\createlinenumber{782}{427e}
+\createlinenumber{783}{84ee}
+\createlinenumber{784}{fbf6}
+\createlinenumber{785}{9ec6}
+\createlinenumber{786}{9d4c}
+\createlinenumber{787}{427e}
+\createlinenumber{788}{8324}
+\createlinenumber{789}{c1d1}
+\createlinenumber{790}{f9c1}
+\createlinenumber{791}{8789}
+\createlinenumber{792}{50d0}
+\createlinenumber{793}{c568}
+\createlinenumber{794}{25b9}
+\createlinenumber{795}{1023}
+\createlinenumber{796}{95cf}
+\createlinenumber{797}{427e}
+\createlinenumber{798}{77e3}
+\createlinenumber{799}{486c}
+\createlinenumber{800}{95cf}
+\createlinenumber{801}{427e}
+\createlinenumber{802}{427e}
+\createlinenumber{803}{50e0}
+\createlinenumber{804}{427e}
+\createlinenumber{805}{0c2b}
+\createlinenumber{806}{207c}
+\createlinenumber{807}{dae4}
+\createlinenumber{808}{40c5}
+\createlinenumber{809}{4d94}
+\createlinenumber{810}{159a}
+\createlinenumber{811}{c291}
+\createlinenumber{812}{3361}
+\createlinenumber{813}{95cf}
+\createlinenumber{814}{95cf}
+\createlinenumber{815}{95cf}
+\createlinenumber{816}{438e}
+\createlinenumber{817}{95cf}
+\createlinenumber{818}{427e}
+\createlinenumber{819}{3cca}
+\createlinenumber{820}{5b57}
+\createlinenumber{821}{103b}
+\createlinenumber{822}{319d}
+\createlinenumber{823}{d0cb}
+\createlinenumber{824}{87f6}
+\createlinenumber{825}{7c0c}
+\createlinenumber{826}{8bb8}
+\createlinenumber{827}{95cf}
+\createlinenumber{828}{95cf}
+\createlinenumber{829}{ee0f}
+\createlinenumber{830}{95cf}
+\createlinenumber{831}{329b}
+\createlinenumber{832}{427e}
+\createlinenumber{833}{427e}
+\begin{lstlisting}[language=C++]
+// maximum matchings in bipartite graphs
+// maximum cardinality bipartite matching
+// O(|V||E|), generally fast
+
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+struct Hungarian {
+  int nx, ny;
+  vector<int> mx, my;
+  vector<vector<int> > e;
+
+  void init(int nx, int ny) {
+    this->nx = nx;
+    this->ny = ny;
+    mx.resize(nx);
+    my.resize(ny);
+    e.clear();
+    e.resize(nx);
+    mark.resize(nx);
+  }
+
+  void add(int a, int b) {
+    e[a].push_back(b);
+  }
+
+  // vector<bool> is evil!!!
+  basic_string<bool> mark;
+
+  bool augment(int i) {
+    if (!mark[i]) {
+      mark[i] = true;
+      for (vector<int>::const_iterator j = e[i].begin(); j != e[i].end(); ++j) {
+        if (my[*j] == -1 || augment(my[*j])) {
+          mx[i] = *j;
+          my[*j] = i;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  int gao() {
+    int ret = 0;
+    fill(mx.begin(), mx.end(), -1);
+    fill(my.begin(), my.end(), -1);
+    for (int i = 0; i < nx; ++i) {
+      fill(mark.begin(), mark.end(), false);
+      if (augment(i)) {
+        ++ret;
+      }
+    }
+    return ret;
+  }
+};
+
+
+\end{lstlisting}
+\subsection{最小费用最大流}
+\createlinenumber{834}{acb9}
+\createlinenumber{835}{3160}
+\createlinenumber{836}{09f7}
+\createlinenumber{837}{59b9}
+\createlinenumber{838}{54ff}
+\createlinenumber{839}{427e}
+\createlinenumber{840}{421c}
+\createlinenumber{841}{427e}
+\createlinenumber{842}{9889}
+\createlinenumber{843}{e90e}
+\createlinenumber{844}{7b7f}
+\createlinenumber{845}{329b}
+\createlinenumber{846}{427e}
+\createlinenumber{847}{7d06}
+\createlinenumber{848}{3b67}
+\createlinenumber{849}{4f94}
+\createlinenumber{850}{3345}
+\createlinenumber{851}{5b0e}
+\createlinenumber{852}{7f53}
+\createlinenumber{853}{329b}
+\createlinenumber{854}{427e}
+\createlinenumber{855}{b80f}
+\createlinenumber{856}{360a}
+\createlinenumber{857}{427e}
+\createlinenumber{858}{41c4}
+\createlinenumber{859}{b985}
+\createlinenumber{860}{a099}
+\createlinenumber{861}{8a8f}
+\createlinenumber{862}{6c2f}
+\createlinenumber{863}{c9ff}
+\createlinenumber{864}{95cf}
+\createlinenumber{865}{95cf}
+\createlinenumber{866}{427e}
+\createlinenumber{867}{46f2}
+\createlinenumber{868}{7f83}
+\createlinenumber{869}{0c8e}
+\createlinenumber{870}{95cf}
+\createlinenumber{871}{427e}
+\createlinenumber{872}{cd81}
+\createlinenumber{873}{d6ad}
+\createlinenumber{874}{97c2}
+\createlinenumber{875}{5e7d}
+\createlinenumber{876}{e4d7}
+\createlinenumber{877}{427e}
+\createlinenumber{878}{70a8}
+\createlinenumber{879}{93d2}
+\createlinenumber{880}{fef6}
+\createlinenumber{881}{eb72}
+\createlinenumber{882}{b992}
+\createlinenumber{883}{d6ae}
+\createlinenumber{884}{5d6d}
+\createlinenumber{885}{ce15}
+\createlinenumber{886}{ef7c}
+\createlinenumber{887}{5ee3}
+\createlinenumber{888}{427e}
+\createlinenumber{889}{bd63}
+\createlinenumber{890}{cc78}
+\createlinenumber{891}{e23b}
+\createlinenumber{892}{ad9c}
+\createlinenumber{893}{15dd}
+\createlinenumber{894}{45d3}
+\createlinenumber{895}{c425}
+\createlinenumber{896}{fd54}
+\createlinenumber{897}{b333}
+\createlinenumber{898}{95cf}
+\createlinenumber{899}{427e}
+\createlinenumber{900}{757c}
+\createlinenumber{901}{227a}
+\createlinenumber{902}{2767}
+\createlinenumber{903}{e8de}
+\createlinenumber{904}{dbc3}
+\createlinenumber{905}{a779}
+\createlinenumber{906}{16f9}
+\createlinenumber{907}{438e}
+\createlinenumber{908}{95cf}
+\createlinenumber{909}{05f0}
+\createlinenumber{910}{8c3b}
+\createlinenumber{911}{065b}
+\createlinenumber{912}{eab7}
+\createlinenumber{913}{95cf}
+\createlinenumber{914}{95cf}
+\createlinenumber{915}{95cf}
+\createlinenumber{916}{95cf}
+\createlinenumber{917}{3361}
+\createlinenumber{918}{95cf}
+\createlinenumber{919}{427e}
+\createlinenumber{920}{93fe}
+\createlinenumber{921}{29a5}
+\createlinenumber{922}{9e20}
+\createlinenumber{923}{1026}
+\createlinenumber{924}{9653}
+\createlinenumber{925}{c891}
+\createlinenumber{926}{8767}
+\createlinenumber{927}{6173}
+\createlinenumber{928}{8e2e}
+\createlinenumber{929}{3ee3}
+\createlinenumber{930}{109e}
+\createlinenumber{931}{27e0}
+\createlinenumber{932}{427e}
+\createlinenumber{933}{6fb2}
+\createlinenumber{934}{a9d1}
+\createlinenumber{935}{8a2b}
+\createlinenumber{936}{0cc2}
+\createlinenumber{937}{aad1}
+\createlinenumber{938}{3d0a}
+\createlinenumber{939}{84d7}
+\createlinenumber{940}{95cf}
+\createlinenumber{941}{95cf}
+\createlinenumber{942}{95cf}
+\createlinenumber{943}{d460}
+\createlinenumber{944}{95cf}
+\createlinenumber{945}{329b}
+\createlinenumber{946}{427e}
+\createlinenumber{947}{427e}
+\begin{lstlisting}[language=C++]
+#include <queue>
+#include <limits>
+#include <vector>
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+template<int MAXN, typename T = int, typename S = T>
+struct MinCostMaxFlow {
+  struct NegativeCostCircuitExistsException {
+  };
+
+  struct Edge {
+    int v;
+    T c;
+    S w;
+    int b;
+    Edge(int v, T c, S w, int b) : v(v), c(c), w(w), b(b) { }
+  };
+
+  int n, source, sink;
+  vector<Edge> e[MAXN];
+
+  void init(int n, int source, int sink) {
+    this->n = n;
+    this->source = source;
+    this->sink = sink;
+    for (int i = 0; i < n; ++i) {
+      e[i].clear();
+    }
+  }
+
+  void addEdge(int a, int b, T c, S w) {
+    e[a].push_back(Edge(b, c, w, e[b].size()));
+    e[b].push_back(Edge(a, 0, -w, e[a].size() - 1));  // TODO
+  }
+
+  bool mark[MAXN];
+  T maxc[MAXN];
+  S minw[MAXN];
+  int dist[MAXN];
+  Edge* prev[MAXN];
+
+  bool _spfa() {
+    queue<int> q;
+    fill(mark, mark + n, false);
+    fill(maxc, maxc + n, 0);
+    fill(minw, minw + n, numeric_limits<S>::max());
+    fill(dist, dist + n, 0);
+    fill(prev, prev + n, (Edge*)NULL);
+    mark[source] = true;
+    maxc[source] = numeric_limits<S>::max();
+    minw[source] = 0;
+
+    q.push(source);
+    while (!q.empty()) {
+      int cur = q.front();
+      mark[cur] = false;
+      q.pop();
+      for (typename vector<Edge>::iterator it = e[cur].begin(); it != e[cur].end(); ++it) {
+        T c = min(maxc[cur], it->c);
+        if (c == 0) {
+          continue;
+        }
+
+        int v = it->v;
+        S w = minw[cur] + it->w;
+        if (minw[v] > w || (minw[v] == w && maxc[v] < c)) { // TODO
+          maxc[v] = c;
+          minw[v] = w;
+          dist[v] = dist[cur] + 1;
+          if (dist[v] >= n) {
+            return false;
+          }
+          prev[v] = &*it;
+          if (!mark[v]) {
+            mark[v] = true;
+            q.push(v);
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  pair<T, S> gao() {
+    T sumc = 0;
+    S sumw = 0;
+    while (true) {
+      if (!_spfa()) {
+        throw NegativeCostCircuitExistsException();
+      } else if (maxc[sink] == 0) {
+        break;
+      } else {
+        T c = maxc[sink];
+        sumc += c;
+        sumw += c * minw[sink];
+
+        int cur = sink;
+        while (cur != source) {
+          Edge* e1 = prev[cur];
+          e1->c -= c;
+          Edge* e2 = &e[e1->v][e1->b];
+          e2->c += c;
+          cur = e2->v;
+        }
+      }
+    }
+    return make_pair(sumc, sumw);
+  }
+};
+
+
+\end{lstlisting}
+\subsection{AhoCorasick自动机}
+\createlinenumber{948}{acb9}
+\createlinenumber{949}{54ff}
+\createlinenumber{950}{427e}
+\createlinenumber{951}{421c}
+\createlinenumber{952}{427e}
+\createlinenumber{953}{3de7}
+\createlinenumber{954}{36aa}
+\createlinenumber{955}{35e5}
+\createlinenumber{956}{2eee}
+\createlinenumber{957}{427e}
+\createlinenumber{958}{4022}
+\createlinenumber{959}{35a5}
+\createlinenumber{960}{9143}
+\createlinenumber{961}{f098}
+\createlinenumber{962}{427e}
+\createlinenumber{963}{5d53}
+\createlinenumber{964}{84fb}
+\createlinenumber{965}{572c}
+\createlinenumber{966}{feb8}
+\createlinenumber{967}{95cf}
+\createlinenumber{968}{427e}
+\createlinenumber{969}{a3fb}
+\createlinenumber{970}{539d}
+\createlinenumber{971}{5b80}
+\createlinenumber{972}{e72e}
+\createlinenumber{973}{6656}
+\createlinenumber{974}{0081}
+\createlinenumber{975}{bb4e}
+\createlinenumber{976}{95cf}
+\createlinenumber{977}{a009}
+\createlinenumber{978}{47f8}
+\createlinenumber{979}{95cf}
+\createlinenumber{980}{e149}
+\createlinenumber{981}{95cf}
+\createlinenumber{982}{427e}
+\createlinenumber{983}{2114}
+\createlinenumber{984}{dfc8}
+\createlinenumber{985}{a7a6}
+\createlinenumber{986}{3873}
+\createlinenumber{987}{131c}
+\createlinenumber{988}{9b4d}
+\createlinenumber{989}{79f5}
+\createlinenumber{990}{8e2e}
+\createlinenumber{991}{6c43}
+\createlinenumber{992}{95cf}
+\createlinenumber{993}{95cf}
+\createlinenumber{994}{88bb}
+\createlinenumber{995}{e42e}
+\createlinenumber{996}{38ff}
+\createlinenumber{997}{1a76}
+\createlinenumber{998}{3873}
+\createlinenumber{999}{9f81}
+\createlinenumber{1000}{076e}
+\createlinenumber{1001}{659d}
+\createlinenumber{1002}{8e2e}
+\createlinenumber{1003}{7720}
+\createlinenumber{1004}{95cf}
+\createlinenumber{1005}{95cf}
+\createlinenumber{1006}{95cf}
+\createlinenumber{1007}{95cf}
+\createlinenumber{1008}{0244}
+\createlinenumber{1009}{427e}
+\createlinenumber{1010}{427e}
+\begin{lstlisting}[language=C++]
+#include <queue>
+#include <algorithm>
+
+using namespace std;
+
+struct AhoCorasick {
+  static const int NONE = 0;
+  static const int MAXN = 1024;
+  static const int CHARSET = 26;
+
+  int end;
+  int tag[MAXN];
+  int fail[MAXN];
+  int trie[MAXN][CHARSET];
+
+  void init() {
+    tag[0] = NONE;
+    fill(trie[0], trie[0] + CHARSET, -1);
+    end = 1;
+  }
+
+  int add(int m, const int* s) {
+    int p = 0;
+    for (int i = 0; i < m; ++i) {
+      if (trie[p][*s] == -1) {
+        tag[end] = NONE;
+        fill(trie[end], trie[end] + CHARSET, -1);
+        trie[p][*s] = end++;
+      }
+      p = trie[p][*s];
+      ++s;
+    }
+    return p;
+  }
+
+  void build() {  // !!
+    queue<int> bfs;
+    fail[0] = 0;
+    for (int i = 0; i < CHARSET; ++i) {
+      if (trie[0][i] != -1) {
+        fail[trie[0][i]] = 0;
+        bfs.push(trie[0][i]);
+      } else {
+        trie[0][i] = 0;
+      }
+    }
+    while (!bfs.empty()) {
+      int p = bfs.front();
+      tag[p] |= tag[fail[p]];
+      bfs.pop();
+      for (int i = 0; i < CHARSET; ++i) {
+        if (trie[p][i] != -1) {
+          fail[trie[p][i]] = trie[fail[p]][i];
+          bfs.push(trie[p][i]);
+        } else {
+          trie[p][i] = trie[fail[p]][i];
+        }
+      }
+    }
+  }
+} ac;
+
+
+\end{lstlisting}
+\subsection{后缀数组}
+\createlinenumber{1011}{09f7}
+\createlinenumber{1012}{0947}
+\createlinenumber{1013}{54ff}
+\createlinenumber{1014}{421c}
+\createlinenumber{1015}{427e}
+\createlinenumber{1016}{010b}
+\createlinenumber{1017}{8a07}
+\createlinenumber{1018}{427e}
+\createlinenumber{1019}{b7ec}
+\createlinenumber{1020}{e220}
+\createlinenumber{1021}{b104}
+\createlinenumber{1022}{0be0}
+\createlinenumber{1023}{427e}
+\createlinenumber{1024}{caf4}
+\createlinenumber{1025}{6c2f}
+\createlinenumber{1026}{7d91}
+\createlinenumber{1027}{95cf}
+\createlinenumber{1028}{7c59}
+\createlinenumber{1029}{6c2f}
+\createlinenumber{1030}{079a}
+\createlinenumber{1031}{bc80}
+\createlinenumber{1032}{ff4f}
+\createlinenumber{1033}{8e2e}
+\createlinenumber{1034}{dc5c}
+\createlinenumber{1035}{95cf}
+\createlinenumber{1036}{95cf}
+\createlinenumber{1037}{427e}
+\createlinenumber{1038}{90d1}
+\createlinenumber{1039}{1d87}
+\createlinenumber{1040}{9a38}
+\createlinenumber{1041}{427e}
+\createlinenumber{1042}{5b80}
+\createlinenumber{1043}{0ece}
+\createlinenumber{1044}{95cf}
+\createlinenumber{1045}{5c61}
+\createlinenumber{1046}{dcfb}
+\createlinenumber{1047}{0041}
+\createlinenumber{1048}{95cf}
+\createlinenumber{1049}{95cf}
+\createlinenumber{1050}{427e}
+\createlinenumber{1051}{c9ea}
+\createlinenumber{1052}{6c2f}
+\createlinenumber{1053}{e3e0}
+\createlinenumber{1054}{95cf}
+\createlinenumber{1055}{6da6}
+\createlinenumber{1056}{1894}
+\createlinenumber{1057}{8376}
+\createlinenumber{1058}{95cf}
+\createlinenumber{1059}{427e}
+\createlinenumber{1060}{6c2f}
+\createlinenumber{1061}{cc5d}
+\createlinenumber{1062}{a959}
+\createlinenumber{1063}{95cf}
+\createlinenumber{1064}{6c2f}
+\createlinenumber{1065}{e1ef}
+\createlinenumber{1066}{ff4f}
+\createlinenumber{1067}{8e2e}
+\createlinenumber{1068}{dc5c}
+\createlinenumber{1069}{95cf}
+\createlinenumber{1070}{95cf}
+\createlinenumber{1071}{95cf}
+\createlinenumber{1072}{427e}
+\createlinenumber{1073}{3ce6}
+\createlinenumber{1074}{ef3c}
+\createlinenumber{1075}{d157}
+\createlinenumber{1076}{39a0}
+\createlinenumber{1077}{8e2e}
+\createlinenumber{1078}{691f}
+\createlinenumber{1079}{b5d4}
+\createlinenumber{1080}{af70}
+\createlinenumber{1081}{aba4}
+\createlinenumber{1082}{95cf}
+\createlinenumber{1083}{109c}
+\createlinenumber{1084}{95cf}
+\createlinenumber{1085}{95cf}
+\createlinenumber{1086}{95cf}
+\createlinenumber{1087}{329b}
+\createlinenumber{1088}{427e}
+\begin{lstlisting}[language=C++]
+#include <vector>
+#include <utility>
+#include <algorithm>
+using namespace std;
+
+struct SuffixArray {
+  vector<int> sa, rank, height;
+
+  template<typename T>
+  void init(int n, const T a[]) {
+    sa.resize(n);
+    rank.resize(n);
+
+    vector<pair<T, int> > assoc(n);
+    for (int i = 0; i < n; ++i) {
+      assoc[i] = make_pair(a[i], i);
+    }
+    sort(assoc.begin(), assoc.end());
+    for (int i = 0; i < n; ++i) {
+      sa[i] = assoc[i].second;
+      if (i == 0 || assoc[i].first != assoc[i - 1].first) {
+        rank[sa[i]] = i;
+      } else {
+        rank[sa[i]] = rank[sa[i - 1]];
+      }
+    }
+
+    vector<int> tmp(n), cnt(n);
+    vector<pair<int, int> > suffix(n);
+    for (int m = 1; m < n; m <<= 1) {
+      // snd
+      for (int i = 0; i < m; ++i) {
+        tmp[i] = n - m + i;
+      }
+      for (int i = 0, j = m; i < n; ++i) {
+        if (sa[i] >= m) {
+          tmp[j++] = sa[i] - m;
+        }
+      }
+      // fst
+      fill(cnt.begin(), cnt.end(), 0);
+      for (int i = 0; i < n; ++i) {
+        ++cnt[rank[i]];
+      }
+      partial_sum(cnt.begin(), cnt.end(), cnt.begin());
+      for (int i = n - 1; i >= 0; --i) {
+        sa[--cnt[rank[tmp[i]]]] = tmp[i];
+      }
+      //
+      for (int i = 0; i < n; ++i) {
+        suffix[i] = make_pair(rank[i],
+          i + m < n ? rank[i + m] : numeric_limits<int>::min());
+      }
+      for (int i = 0; i < n; ++i) {
+        if (i == 0 || suffix[sa[i]] != suffix[sa[i - 1]]) {
+          rank[sa[i]] = i;
+        } else {
+          rank[sa[i]] = rank[sa[i - 1]];
+        }
+      }
+    }
+
+    height.resize(n);
+    for (int i = 0, z = 0; i < n; ++i) {
+      if (rank[i] == 0) {
+        height[0] = z = 0;
+      } else {
+        int x = i, y = sa[rank[i] - 1];
+        z = max(0, z - 1);
+        while (x + z < n && y + z < n && a[x + z] == a[y + z]) {
+          ++z;
+        }
+        height[rank[i]] = z;
+      }
+    }
+  }
+};
+
+\end{lstlisting}
+\subsection{LU分解}
+\createlinenumber{1089}{6e2d}
+\createlinenumber{1090}{c726}
+\createlinenumber{1091}{427e}
+\createlinenumber{1092}{1806}
+\createlinenumber{1093}{6c2f}
+\createlinenumber{1094}{178d}
+\createlinenumber{1095}{95cf}
+\createlinenumber{1096}{cde9}
+\createlinenumber{1097}{56c5}
+\createlinenumber{1098}{1bf2}
+\createlinenumber{1099}{4636}
+\createlinenumber{1100}{b564}
+\createlinenumber{1101}{0fc0}
+\createlinenumber{1102}{f3bf}
+\createlinenumber{1103}{95cf}
+\createlinenumber{1104}{95cf}
+\createlinenumber{1105}{95cf}
+\createlinenumber{1106}{9478}
+\createlinenumber{1107}{e7f0}
+\createlinenumber{1108}{6c2f}
+\createlinenumber{1109}{6fea}
+\createlinenumber{1110}{95cf}
+\createlinenumber{1111}{44fd}
+\createlinenumber{1112}{50eb}
+\createlinenumber{1113}{95cf}
+\createlinenumber{1114}{b775}
+\createlinenumber{1115}{b333}
+\createlinenumber{1116}{95cf}
+\createlinenumber{1117}{c190}
+\createlinenumber{1118}{a9f2}
+\createlinenumber{1119}{3bee}
+\createlinenumber{1120}{56e2}
+\createlinenumber{1121}{95cf}
+\createlinenumber{1122}{95cf}
+\createlinenumber{1123}{95cf}
+\createlinenumber{1124}{95cf}
+\createlinenumber{1125}{427e}
+\createlinenumber{1126}{c4d2}
+\createlinenumber{1127}{5bc8}
+\createlinenumber{1128}{6c2f}
+\createlinenumber{1129}{2c68}
+\createlinenumber{1130}{95cf}
+\createlinenumber{1131}{6c2f}
+\createlinenumber{1132}{1226}
+\createlinenumber{1133}{99d9}
+\createlinenumber{1134}{95cf}
+\createlinenumber{1135}{95cf}
+\createlinenumber{1136}{1894}
+\createlinenumber{1137}{34a7}
+\createlinenumber{1138}{99d9}
+\createlinenumber{1139}{95cf}
+\createlinenumber{1140}{4459}
+\createlinenumber{1141}{7360}
+\createlinenumber{1142}{95cf}
+\createlinenumber{1143}{95cf}
+\createlinenumber{1144}{6c2f}
+\createlinenumber{1145}{2a61}
+\createlinenumber{1146}{95cf}
+\createlinenumber{1147}{95cf}
+\createlinenumber{1148}{427e}
+\createlinenumber{1149}{427e}
+\createlinenumber{1150}{427e}
+\createlinenumber{1151}{427e}
+\begin{lstlisting}[language=C++]
+const int MAXN = 128;
+const double EPS = 1e-10;
+
+void LU(int n, double a[MAXN][MAXN], int r[MAXN], int c[MAXN]) {
+  for (int i = 0; i < n; ++i) {
+    r[i] = c[i] = i;
+  }
+  for (int k = 0; k < n; ++k) {
+    int ii = k, jj = k;
+    for (int i = k; i < n; ++i) {
+      for (int j = k; j < n; ++j) {
+        if (fabs(a[i][j]) > fabs(a[ii][jj])) {
+          ii = i;
+          jj = j;
+        }
+      }
+    }
+    swap(r[k], r[ii]);
+    swap(c[k], c[jj]);
+    for (int i = 0; i < n; ++i) {
+      swap(a[i][k], a[i][jj]);
+    }
+    for (int j = 0; j < n; ++j) {
+      swap(a[k][j], a[ii][j]);
+    }
+    if (fabs(a[k][k]) < EPS) {
+      continue;
+    }
+    for (int i = k + 1; i < n; ++i) {
+      a[i][k] = a[i][k] / a[k][k];
+      for (int j = k + 1; j < n; ++j) {
+        a[i][j] -= a[i][k] * a[k][j];
+      }
+    }
+  }
+}
+
+void solve(int n, double a[MAXN][MAXN], int r[MAXN], int c[MAXN], double b[MAXN]) {
+  static double x[MAXN];
+  for (int i = 0; i < n; ++i) {
+    x[i] = b[r[i]];
+  }
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < i; ++j) {
+      x[i] -= a[i][j] * x[j];
+    }
+  }
+  for (int i = n - 1; i >= 0; --i) {
+    for (int j = n - 1; j > i; --j) {
+      x[i] -= a[i][j] * x[j];
+    }
+    if (fabs(a[i][i]) >= EPS) {
+      x[i] /= a[i][i];
+    } // else assert(fabs(x[i]) < EPS);
+  }
+  for (int i = 0; i < n; ++i) {
+    b[c[i]] = x[i];
+  }
+}
+
+// LU(n - 1, a, r, c);
+// solve(n - 1, a, r, c, b);
+
+\end{lstlisting}
